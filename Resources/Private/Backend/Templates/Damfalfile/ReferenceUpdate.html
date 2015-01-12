@@ -136,7 +136,7 @@
 						<br/>
 						<f:translate key="tx_mkdam2fal_domain_model_damfalfile.logfiles"/>:<br/>
 						<f:for each="{folderFilenamesLog}" as="filenames" iteration="iteratorFilenames" >
-							<f:link.external uri="/typo3temp/mkdam2fal/logs/{filenames}">
+							<f:link.external uri="{pathLogs}{filenames}">
 								{filenames}<br/>
 							</f:link.external>
 						</f:for>

@@ -67,6 +67,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 
 		$pathSite = $this->getRightPath();
 		$this->view->assign('pathSite',$pathSite);
+		$this->view->assign('pathLogs',$this->getLogPath());
 
 		// action for updating inserting the DAM-entrys from tx_dam
 
@@ -223,6 +224,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 
 		$pathSite = $this->getRightPath();
 		$this->view->assign('pathSite', $pathSite);
+		$this->view->assign('pathLogs',$this->getLogPath());
 
 		// action for updating inserting DAM-references from tx_dam_mm_ref; flag is dammmrefalreadyexported
 		$chosenExtension = $this->backendSessionHandler->setOrGetSessionParameter($chosenExtension, 'chosenExtension');
@@ -530,10 +532,17 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 	 * function to get server path
 	 * @return string
 	 */
+	public function getLogPath() {
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . 'typo3temp/mkdam2fal/logs/';
+	}
+
+	/**
+	 * function to get server path
+	 * @return string
+	 */
 	public function getRightPath() {
 		$pathSite = str_replace($_SERVER['DOCUMENT_ROOT'], '', \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mkdam2fal'));
 		$pathSite = $_SERVER['HTTP_HOST'] . '/' . $pathSite;
-		// $pathSite = $_SERVER['HTTP_HOST'] . $pathSite;
 		return $pathSite;
 	}
 
