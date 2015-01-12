@@ -1,21 +1,26 @@
 {
-	"name" : "websedit/we-dam2fal62",
+	"name" : "dmk/mkdam2fal",
 	"description" : "This extension migrates your Dam-data into FAL.",
 	"version" : "1.0.3",
 	"type" : "typo3-cms-extension",
 	"keywords" : ["TYPO3 CMS", "dam", "fal", "migration"],
-	"homepage" : "http://websedit.www.de/",
+	"homepage" : "http://www.dmk-ebusiness.de/",
 	"license" : "GPL-2.0+",
 	"authors" : [
+		{
+			"name" : "Michael Wagner",
+			"email" : "michael.wagner@dmk-ebusiness.de",
+			"role" : "Developer"
+		},
 		{
 			"name" : "Daniel Hasse - websedit AG",
 			"email" : "extensions@websedit.de"
 		}
 	],
 	"support": {
-		"email": "extensions@websedit.de"
+		"email": "dev@dmk-ebusiness.de",
 	},
 	"replace": {
-		"typo3-ter/we-dam2fal62": "*"
+		"typo3-ter/mkdam2fal": "*"
 	}
 }
