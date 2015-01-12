@@ -18,7 +18,7 @@
 		}
 	],
 	"support": {
-		"email": "dev@dmk-ebusiness.de",
+		"email": "dev@dmk-ebusiness.de"
 	},
 	"replace": {
 		"typo3-ter/mkdam2fal": "*"
