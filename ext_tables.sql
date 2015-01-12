@@ -1,7 +1,7 @@
 #
-# Table structure for table 'tx_wedam2fal62_domain_model_damfalfile'
+# Table structure for table 'tx_mkdam2fal_domain_model_damfalfile'
 #
-CREATE TABLE tx_wedam2fal62_domain_model_damfalfile (
+CREATE TABLE tx_mkdam2fal_domain_model_damfalfile (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,

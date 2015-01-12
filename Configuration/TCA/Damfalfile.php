@@ -3,8 +3,8 @@ if (!defined ('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 
-$GLOBALS['TCA']['tx_wedam2fal62_domain_model_damfalfile'] = array(
-	'ctrl' => $GLOBALS['TCA']['tx_wedam2fal62_domain_model_damfalfile']['ctrl'],
+$GLOBALS['TCA']['tx_mkdam2fal_domain_model_damfalfile'] = array(
+	'ctrl' => $GLOBALS['TCA']['tx_mkdam2fal_domain_model_damfalfile']['ctrl'],
 	'interface' => array(
 		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, title',
 	),
@@ -37,8 +37,8 @@ $GLOBALS['TCA']['tx_wedam2fal62_domain_model_damfalfile'] = array(
 				'items' => array(
 					array('', 0),
 				),
-				'foreign_table' => 'tx_wedam2fal62_domain_model_damfalfile',
-				'foreign_table_where' => 'AND tx_wedam2fal62_domain_model_damfalfile.pid=###CURRENT_PID### AND tx_wedam2fal62_domain_model_damfalfile.sys_language_uid IN (-1,0)',
+				'foreign_table' => 'tx_mkdam2fal_domain_model_damfalfile',
+				'foreign_table_where' => 'AND tx_mkdam2fal_domain_model_damfalfile.pid=###CURRENT_PID### AND tx_mkdam2fal_domain_model_damfalfile.sys_language_uid IN (-1,0)',
 			),
 		),
 		'l10n_diffsource' => array(
@@ -95,7 +95,7 @@ $GLOBALS['TCA']['tx_wedam2fal62_domain_model_damfalfile'] = array(
 		),
 		'title' => array(
 			'exclude' => 1,
-			'label' => 'LLL:EXT:we_dam2fal62/Resources/Private/Language/locallang_db.xlf:tx_wedam2fal62_domain_model_damfalfile.title',
+			'label' => 'LLL:EXT:mkdam2fal/Resources/Private/Language/locallang_db.xlf:tx_mkdam2fal_domain_model_damfalfile.title',
 			'config' => array(
 				'type' => 'input',
 				'size' => 30,

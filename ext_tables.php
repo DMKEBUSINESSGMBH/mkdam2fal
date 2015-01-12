@@ -15,7 +15,7 @@ if (TYPO3_MODE === 'BE') {
 	 * Registers a Backend Module
 	 */
 	\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-		'WE.' . $_EXTKEY,
+		'DMK.' . $_EXTKEY,
 		'tools',	 // Make module a submodule of 'tools'
 		'mod1',	// Submodule key
 		'',						// Position
@@ -32,11 +32,11 @@ if (TYPO3_MODE === 'BE') {
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile($_EXTKEY, 'Configuration/TypoScript', 'DAM2FAL 6.2');
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_wedam2fal62_domain_model_damfalfile', 'EXT:we_dam2fal62/Resources/Private/Language/locallang_csh_tx_wedam2fal62_domain_model_damfalfile.xlf');
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_wedam2fal62_domain_model_damfalfile');
-$GLOBALS['TCA']['tx_wedam2fal62_domain_model_damfalfile'] = array(
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_mkdam2fal_domain_model_damfalfile', 'EXT:mkdam2fal/Resources/Private/Language/locallang_csh_tx_mkdam2fal_domain_model_damfalfile.xlf');
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_mkdam2fal_domain_model_damfalfile');
+$GLOBALS['TCA']['tx_mkdam2fal_domain_model_damfalfile'] = array(
 	'ctrl' => array(
-		'title'	=> 'LLL:EXT:we_dam2fal62/Resources/Private/Language/locallang_db.xlf:tx_wedam2fal62_domain_model_damfalfile',
+		'title'	=> 'LLL:EXT:mkdam2fal/Resources/Private/Language/locallang_db.xlf:tx_mkdam2fal_domain_model_damfalfile',
 		'label' => 'title',
 		'tstamp' => 'tstamp',
 		'crdate' => 'crdate',
@@ -57,6 +57,6 @@ $GLOBALS['TCA']['tx_wedam2fal62_domain_model_damfalfile'] = array(
 		),
 		'searchFields' => 'title,',
 		'dynamicConfigFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY) . 'Configuration/TCA/Damfalfile.php',
-		'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_wedam2fal62_domain_model_damfalfile.gif'
+		'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_mkdam2fal_domain_model_damfalfile.gif'
 	),
 );

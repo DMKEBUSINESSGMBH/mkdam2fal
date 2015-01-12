@@ -4,15 +4,15 @@ if (!defined('TYPO3_MODE')) {
 }
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-	'WE.' . $_EXTKEY,
+	'DMK.' . $_EXTKEY,
 	'Pi1',
 	array(
 		'Damfalfile' => 'list,referenceUpdate,updateCategory',
-		
+
 	),
 	// non-cacheable actions
 	array(
 		'Damfalfile' => 'list,referenceUpdate,updateCategory',
-		
+
 	)
 );

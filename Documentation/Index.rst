@@ -14,7 +14,7 @@ DAM2FAL 6.2
 .. only:: html
 
 	:Classification:
-		we_dam2fal62
+		mkdam2fal
 
 	:Version:
 		|release|
@@ -23,19 +23,19 @@ DAM2FAL 6.2
 		en
 
 	:Description:
-		This extension migrates your Dam-data into FAL.
+		This extension migrates your Dam-data into FAL. MKDAM2FAL is a Fork of the we_dam2fal Extension with additional features.
 
 	:Keywords:
 		dam-converter, dam-fal-migration, dam-migration, dam-file-converter, dam-fal-data, forAdmins, forAdvanced, forDevelopers
 
 	:Copyright:
-		2014
+		2015
 
 	:Author:
-		Daniel Hasse - websedit AG
+		Michael Wagner - DMK E-BUSINESS GmbH, Daniel Hasse - websedit AG
 
 	:Email:
-		extensions@websedit.de
+		dev@dmk-ebusiness.de
 
 	:License:
 		This document is published under the Open Content License

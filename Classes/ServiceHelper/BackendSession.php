@@ -1,9 +1,10 @@
 <?php
-namespace WE\WeDam2fal62\ServiceHelper;
+namespace DMK\Mkdam2fal\ServiceHelper;
 
 /***************************************************************
  *  Copyright notice
  *
+ *  (c) 2015 DMK E-BUSINESS GmbH (dev@dmk-ebusiness.de)
  *  (c) 2013 Daniel Hasse - websedit AG <extensions@websedit.de>
  *
  *  All rights reserved
@@ -24,16 +25,16 @@ namespace WE\WeDam2fal62\ServiceHelper;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
- 
+
 /**
  *
  *
- * @package we_dam2fal62
+ * @package mkdam2fal
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  *
  */
 class BackendSession {
-	
+
 	/**
      * function to set and get backendsession parameters
 	 *

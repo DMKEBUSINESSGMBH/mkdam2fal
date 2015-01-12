@@ -1,31 +1,31 @@
 
-plugin.tx_wedam2fal62 {
+plugin.tx_mkdam2fal {
 	view {
-		# cat=plugin.tx_wedam2fal62/file; type=string; label=Path to template root (FE)
-		templateRootPath = EXT:we_dam2fal62/Resources/Private/Templates/
-		# cat=plugin.tx_wedam2fal62/file; type=string; label=Path to template partials (FE)
-		partialRootPath = EXT:we_dam2fal62/Resources/Private/Partials/
-		# cat=plugin.tx_wedam2fal62/file; type=string; label=Path to template layouts (FE)
-		layoutRootPath = EXT:we_dam2fal62/Resources/Private/Layouts/
+		# cat=plugin.tx_mkdam2fal/file; type=string; label=Path to template root (FE)
+		templateRootPath = EXT:mkdam2fal/Resources/Private/Templates/
+		# cat=plugin.tx_mkdam2fal/file; type=string; label=Path to template partials (FE)
+		partialRootPath = EXT:mkdam2fal/Resources/Private/Partials/
+		# cat=plugin.tx_mkdam2fal/file; type=string; label=Path to template layouts (FE)
+		layoutRootPath = EXT:mkdam2fal/Resources/Private/Layouts/
 	}
 	persistence {
-		# cat=plugin.tx_wedam2fal62//a; type=string; label=Default storage PID
+		# cat=plugin.tx_mkdam2fal//a; type=string; label=Default storage PID
 		storagePid =
 	}
 }
 
 
-module.tx_wedam2fal62 {
+module.tx_mkdam2fal {
 	view {
-		# cat=module.tx_wedam2fal62/file; type=string; label=Path to template root (BE)
-		templateRootPath = EXT:we_dam2fal62/Resources/Private/Backend/Templates/
-		# cat=module.tx_wedam2fal62/file; type=string; label=Path to template partials (BE)
-		partialRootPath = EXT:we_dam2fal62/Resources/Private/Backend/Partials/
-		# cat=module.tx_wedam2fal62/file; type=string; label=Path to template layouts (BE)
-		layoutRootPath = EXT:we_dam2fal62/Resources/Private/Backend/Layouts/
+		# cat=module.tx_mkdam2fal/file; type=string; label=Path to template root (BE)
+		templateRootPath = EXT:mkdam2fal/Resources/Private/Backend/Templates/
+		# cat=module.tx_mkdam2fal/file; type=string; label=Path to template partials (BE)
+		partialRootPath = EXT:mkdam2fal/Resources/Private/Backend/Partials/
+		# cat=module.tx_mkdam2fal/file; type=string; label=Path to template layouts (BE)
+		layoutRootPath = EXT:mkdam2fal/Resources/Private/Backend/Layouts/
 	}
 	persistence {
-		# cat=module.tx_wedam2fal62//a; type=string; label=Default storage PID
+		# cat=module.tx_mkdam2fal//a; type=string; label=Default storage PID
 		storagePid =
 	}
 }

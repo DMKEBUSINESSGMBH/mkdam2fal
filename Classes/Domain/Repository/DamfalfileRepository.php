@@ -1,12 +1,13 @@
 <?php
-namespace WE\WeDam2fal62\Domain\Repository;
+namespace DMK\Mkdam2fal\Domain\Repository;
 
 
 /***************************************************************
  *
  *  Copyright notice
  *
- *  (c) 2014
+ *  (c) 2015 DMK E-BUSINESS GmbH (dev@dmk-ebusiness.de)
+ *  (c) 2014 Daniel Hasse - websedit AG <extensions@websedit.de>
  *
  *  All rights reserved
  *

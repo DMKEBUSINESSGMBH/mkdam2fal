@@ -1,11 +1,11 @@
-plugin.tx_wedam2fal62 {
+plugin.tx_mkdam2fal {
 	view {
-		templateRootPath = {$plugin.tx_wedam2fal62.view.templateRootPath}
-		partialRootPath = {$plugin.tx_wedam2fal62.view.partialRootPath}
-		layoutRootPath = {$plugin.tx_wedam2fal62.view.layoutRootPath}
+		templateRootPath = {$plugin.tx_mkdam2fal.view.templateRootPath}
+		partialRootPath = {$plugin.tx_mkdam2fal.view.partialRootPath}
+		layoutRootPath = {$plugin.tx_mkdam2fal.view.layoutRootPath}
 	}
 	persistence {
-		storagePid = {$plugin.tx_wedam2fal62.persistence.storagePid}
+		storagePid = {$plugin.tx_mkdam2fal.persistence.storagePid}
 	}
 	features {
 		# uncomment the following line to enable the new Property Mapper.
@@ -13,7 +13,7 @@ plugin.tx_wedam2fal62 {
 	}
 }
 
-plugin.tx_wedam2fal62._CSS_DEFAULT_STYLE (
+plugin.tx_mkdam2fal._CSS_DEFAULT_STYLE (
 	textarea.f3-form-error {
 		background-color:#FF9F9F;
 		border: 1px #FF0000 solid;
@@ -24,16 +24,16 @@ plugin.tx_wedam2fal62._CSS_DEFAULT_STYLE (
 		border: 1px #FF0000 solid;
 	}
 
-	.tx-we-dam2fal62 table {
+	.tx-mkdam2fal table {
 		border-collapse:separate;
 		border-spacing:10px;
 	}
 
-	.tx-we-dam2fal62 table th {
+	.tx-mkdam2fal table th {
 		font-weight:bold;
 	}
 
-	.tx-we-dam2fal62 table td {
+	.tx-mkdam2fal table td {
 		vertical-align:top;
 	}
 
@@ -48,13 +48,13 @@ plugin.tx_wedam2fal62._CSS_DEFAULT_STYLE (
 )
 
 # Module configuration
-module.tx_wedam2fal62 {
+module.tx_mkdam2fal {
 	persistence {
-		storagePid = {$module.tx_wedam2fal62.persistence.storagePid}
+		storagePid = {$module.tx_mkdam2fal.persistence.storagePid}
 	}
 	view {
-		templateRootPath = {$module.tx_wedam2fal62.view.templateRootPath}
-		partialRootPath = {$module.tx_wedam2fal62.view.partialRootPath}
-		layoutRootPath = {$module.tx_wedam2fal62.view.layoutRootPath}
+		templateRootPath = {$module.tx_mkdam2fal.view.templateRootPath}
+		partialRootPath = {$module.tx_mkdam2fal.view.partialRootPath}
+		layoutRootPath = {$module.tx_mkdam2fal.view.layoutRootPath}
 	}
 }

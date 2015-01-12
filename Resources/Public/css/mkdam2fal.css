@@ -48,7 +48,7 @@ input.error {
     background-position: 10px center;
 }
 
-.tx-we-dam2fal input{
+.tx-mkdam2fal input{
     padding: 2px 2px 2px 2px;
 }
 
@@ -60,15 +60,15 @@ label.error {
   display: none !important;
 }
 
-.tx-we-dam2fal h1 {
+.tx-mkdam2fal h1 {
 	text-align:left;
 }
 
-.tx-we-dam2fal h2 {
+.tx-mkdam2fal h2 {
 	font-size:12px;
 }
 
-.tx-we-dam2fal ul, .tx-we-dam2fal ol{
+.tx-mkdam2fal ul, .tx-mkdam2fal ol{
 
 	list-style: disc;
 	list-style-type:decimal;

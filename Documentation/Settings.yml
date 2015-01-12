@@ -18,9 +18,7 @@ conf.py:
     - null
   latex_documents:
   - - Index
-    - we_dam2fal62.tex
-    - DAM2FAL 6.2
-    - 
+    - MKDAM2FAL
     - manual
   latex_elements:
     papersize: a4paper

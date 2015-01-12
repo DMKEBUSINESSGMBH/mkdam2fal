@@ -1,9 +1,10 @@
 <?php
-namespace WE\WeDam2fal62\Controller;
+namespace DMK\Mkdam2fal\Controller;
 
 /***************************************************************
  *  Copyright notice
  *
+ *  (c) 2015 DMK E-BUSINESS GmbH (dev@dmk-ebusiness.de)
  *  (c) 2014 Daniel Hasse - websedit AG <extensions@websedit.de>
  *
  *  All rights reserved
@@ -33,7 +34,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 	/**
 	 * damfalfileRepository
 	 *
-	 * @var \WE\WeDam2fal62\Domain\Repository\DamfalfileRepository
+	 * @var \DMK\Mkdam2fal\Domain\Repository\DamfalfileRepository
 	 * @inject
 	 */
 	protected $damfalfileRepository;
@@ -41,7 +42,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 	/**
 	 * fileFolderRead
 	 *
-	 * @var \WE\WeDam2fal62\ServiceHelper\FileFolderRead
+	 * @var \DMK\Mkdam2fal\ServiceHelper\FileFolderRead
 	 * @inject
 	 */
 	protected $fileFolderRead;
@@ -49,7 +50,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 	/**
 	 * backendSessionHandler
 	 *
-	 * @var \WE\WeDam2fal62\ServiceHelper\BackendSession
+	 * @var \DMK\Mkdam2fal\ServiceHelper\BackendSession
 	 * @inject
 	 */
 	protected $backendSessionHandler;
@@ -387,7 +388,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 		$this->view->assign('errorMarker', $errorMarker);
 
 		// get filename from Logs folder to create download buttons
-		$folderFilenamesLog = $this->fileFolderRead->getFolderFilenames(PATH_site.'typo3conf/ext/we_dam2fal62/Logs/');
+		$folderFilenamesLog = $this->fileFolderRead->getFolderFilenames(PATH_site.'typo3temp/mkdam2fal/logs/');
 
 		$this->view->assign('folderFilenamesLog', $folderFilenamesLog);
 
@@ -530,7 +531,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 	 * @return string
 	 */
 	public function getRightPath() {
-		$pathSite = str_replace($_SERVER['DOCUMENT_ROOT'], '', \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('we_dam2fal62'));
+		$pathSite = str_replace($_SERVER['DOCUMENT_ROOT'], '', \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('mkdam2fal'));
 		$pathSite = $_SERVER['HTTP_HOST'] . '/' . $pathSite;
 		// $pathSite = $_SERVER['HTTP_HOST'] . $pathSite;
 		return $pathSite;
