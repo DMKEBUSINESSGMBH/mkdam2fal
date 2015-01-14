@@ -630,7 +630,7 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 				'sys_file_storage',
 				'deleted != 1'
 			);
-			foreach($res as $row) {
+			for ($row = FALSE; $row = $res->fetch_array();) {
 				// read the config
 				// sys_file_storage is not localisable,
 				// so the flexform path is data->sDEF->lDEF->{confvalue}->vDEF
