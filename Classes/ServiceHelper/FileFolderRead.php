@@ -86,7 +86,7 @@ class FileFolderRead {
 		if ($handle = opendir($path)) {
 			$counter=0;
 			while (false !== ($file = readdir($handle))) {
-				if ($file != '.' && $file != '..') {
+				if ($file != '.' && $file != '..' && $file[0] != '.') {
 					$arr[$counter] = $file;
 					$counter++;
 				}
