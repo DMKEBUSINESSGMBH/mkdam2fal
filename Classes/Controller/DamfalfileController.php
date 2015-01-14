@@ -26,6 +26,8 @@ namespace DMK\Mkdam2fal\Controller;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use DMK\Mkdam2fal\Utility\ConfigUtility;
+
 /**
  * DamfalfileController
  */
@@ -78,7 +80,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 			'damalreadyexported != 1 and deleted = 0',
 			$groupBy = '',
 			$orderBy = '',
-			$limit = '10000'
+			$limit = ConfigUtility::getDefaultLimit()
 		);
 
 		if ($txDamEntriesNotImported) {
@@ -109,7 +111,14 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 					}
 
 					// compare DAM with FAL entries in db in a foreach loop where tx_dam.file_path == sys_file.identifier and tx_dam.file_name == sys_file.name and sys_language_uid == sys_file_metadata.sys_language_uid
-					$foundFALEntry = $this->damfalfileRepository->selectOneRowQuery('file.uid', 'sys_file file, sys_file_metadata filemetadata', "file.uid = filemetadata.file AND file.identifier = '" . $this->sanitizeName($completeIdentifierForFAL) . "' AND file.name = '" . $this->sanitizeName($rowDamEntriesNotImported["file_name"]) . "' AND file.storage = " . $storageIdForFAL . " AND filemetadata.sys_language_uid = '" . $rowDamEntriesNotImported['sys_language_uid'] . "'", $groupBy = '', $orderBy = '', $limit = '10000');
+					$foundFALEntry = $this->damfalfileRepository->selectOneRowQuery(
+						'file.uid',
+						'sys_file file, sys_file_metadata filemetadata',
+						"file.uid = filemetadata.file AND file.identifier = '" . $this->sanitizeName($completeIdentifierForFAL) . "' AND file.name = '" . $this->sanitizeName($rowDamEntriesNotImported["file_name"]) . "' AND file.storage = " . $storageIdForFAL . " AND filemetadata.sys_language_uid = '" . $rowDamEntriesNotImported['sys_language_uid'] . "'",
+						$groupBy = '',
+						$orderBy = '',
+						$limit = ConfigUtility::getDefaultLimit()
+					);
 
 					// if a FAL entry is found compare information and update it if necessary
 					if ($foundFALEntry["uid"] > 0) {
@@ -129,14 +138,14 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 							$completeIdentifierForFALWithParentID = $this->damfalfileRepository->getIdentifier($damParentFileInfo['filepath'],$damParentFileInfo['filename']);
 
 							// compare DAM with FAL entries
-							#$foundFALEntryWithParentID = $this->damfalfileRepository->selectOneRowQuery('uid', 'sys_file', "identifier = '" . addslashes($completeIdentifierForFALWithParentID) . "' and name = '" . addslashes($damParentFileInfo['filename']) . "' and sys_language_uid = '" . $rowDamEntriesNotImported['sys_language_uid'] . "'", $groupBy = '', $orderBy = '', $limit = '10000');
-
-							$foundFALEntryWithParentID = $this->damfalfileRepository->selectOneRowQuery('uid',
-							'sys_file file, sys_file_metadata filemetadata',
-							"file.uid = filemetadata.file AND file.identifier = '" . addslashes($completeIdentifierForFALWithParentID) . "' AND file.name = '" . addslashes($damParentFileInfo['filename']) . "' and file.storage = " . $storageIdForFAL . " AND filemetadata.sys_language_uid = '" . $rowDamEntriesNotImported['sys_language_uid'] . "'",
-							$groupBy = '',
-							$orderBy = '',
-							$limit = '10000');
+							$foundFALEntryWithParentID = $this->damfalfileRepository->selectOneRowQuery(
+								'uid',
+								'sys_file file, sys_file_metadata filemetadata',
+								"file.uid = filemetadata.file AND file.identifier = '" . addslashes($completeIdentifierForFALWithParentID) . "' AND file.name = '" . addslashes($damParentFileInfo['filename']) . "' and file.storage = " . $storageIdForFAL . " AND filemetadata.sys_language_uid = '" . $rowDamEntriesNotImported['sys_language_uid'] . "'",
+								$groupBy = '',
+								$orderBy = '',
+								$limit = ConfigUtility::getDefaultLimit()
+							);
 
 							// if a FAL entry is found compare information and update it if necessary
 							if ($foundFALEntryWithParentID['uid'] > 0) {
@@ -145,14 +154,28 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 							} else {
 								// if a file entry exits but there is no filemetadata entry
 								// test if a fal entry exists, if so then just do a filemetadata entry
-								$foundFALEntryChecked = $this->damfalfileRepository->selectOneRowQuery('uid', 'sys_file', "identifier = '" . addslashes($completeIdentifierForFALWithParentID) . "' and name = '" . addslashes($damParentFileInfo['filename']) . "' AND storage = " . $storageIdForFAL, $groupBy = '', $orderBy = '', $limit = '10000');
+								$foundFALEntryChecked = $this->damfalfileRepository->selectOneRowQuery(
+									'uid',
+									'sys_file',
+									"identifier = '" . addslashes($completeIdentifierForFALWithParentID) . "' and name = '" . addslashes($damParentFileInfo['filename']) . "' AND storage = " . $storageIdForFAL,
+									$groupBy = '',
+									$orderBy = '',
+									$limit = ConfigUtility::getDefaultLimit()
+								);
 								// if a FAL entry is found, insert metadata
 								if ($foundFALEntryChecked['uid'] > 0 && $rowDamEntriesNotImported['sys_language_uid'] > 0) {
 									$this->damfalfileRepository->insertFALEntryMetadata($foundFALEntryChecked['uid'], $rowDamEntriesNotImported['uid'], $rowDamEntriesNotImported['l18n_parent']);
 								} else {
 									// update sotrage index should insert all files, so just update
 									//$this->damfalfileRepository->insertFalEntry($rowDamEntriesNotImported['uid']);
-									$foundFALEntryWhichHasNoFilemetadata = $this->damfalfileRepository->selectOneRowQuery('uid', 'sys_file', "identifier = '" . $this->sanitizeName($completeIdentifierForFAL) . "' AND name = '" . $this->sanitizeName($rowDamEntriesNotImported["file_name"]) . "'", $groupBy = '', $orderBy = '', $limit = '10000');
+									$foundFALEntryWhichHasNoFilemetadata = $this->damfalfileRepository->selectOneRowQuery(
+										'uid',
+										'sys_file',
+										"identifier = '" . $this->sanitizeName($completeIdentifierForFAL) . "' AND name = '" . $this->sanitizeName($rowDamEntriesNotImported["file_name"]) . "'",
+										$groupBy = '',
+										$orderBy = '',
+										$limit = ConfigUtility::getDefaultLimit()
+									);
 									$this->damfalfileRepository->updateFALEntry($foundFALEntryWhichHasNoFilemetadata['uid'], $rowDamEntriesNotImported['uid']);
 								}
 							}
@@ -160,7 +183,14 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 						} else {
 							// check if a fal entry exists but has no filemetadata entry
 							// search for fal entry, comparing identifier and name
-							$foundFALEntryWhichHasNoFilemetadata = $this->damfalfileRepository->selectOneRowQuery('uid', 'sys_file', "identifier = '" . $this->sanitizeName($completeIdentifierForFAL) . "' AND name = '" . $this->sanitizeName($rowDamEntriesNotImported["file_name"]) . "'", $groupBy = '', $orderBy = '', $limit = '10000');
+							$foundFALEntryWhichHasNoFilemetadata = $this->damfalfileRepository->selectOneRowQuery(
+								'uid',
+								'sys_file',
+								"identifier = '" . $this->sanitizeName($completeIdentifierForFAL) . "' AND name = '" . $this->sanitizeName($rowDamEntriesNotImported["file_name"]) . "'",
+								$groupBy = '',
+								$orderBy = '',
+								$limit = ConfigUtility::getDefaultLimit()
+							);
 							// if a fal entry was found take that uid otherwise insert fal entry
 							if ($foundFALEntryWhichHasNoFilemetadata){
 								// update fal entry
@@ -255,8 +285,14 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 					if ($value[2] != '' || $value[2] != 0) {
 
 							// check if source was deleted, if yes do not copy
-							// $mmRefInfo = $this->damfalfileRepository->getArrayDataFromTable("*", "tx_dam_mm_ref", "tablenames = '".$value[0]."' and ident = '".$value[1]."' and dammmrefalreadyexported != 1", $groupBy='', $orderBy='', $limit='10000');
-							$mmRefInfo = $this->damfalfileRepository->getArrayDataFromTable('*', 'tx_dam_mm_ref', "tablenames = '" . $value[4] . "' and ident = '" . $value[1] . "' and dammmrefalreadyexported != 1", $groupBy = '', $orderBy = '', $limit = '100000');
+							$mmRefInfo = $this->damfalfileRepository->getArrayDataFromTable(
+								'*',
+								'tx_dam_mm_ref',
+								"tablenames = '" . $value[4] . "' and ident = '" . $value[1] . "' and dammmrefalreadyexported != 1",
+								$groupBy = '',
+								$orderBy = '',
+								$limit = ConfigUtility::getDefaultLimit()
+							);
 
 
 							#$this->debug($mmRefInfoSSS);
@@ -339,7 +375,14 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 
 		if ($executeReferenceUpdateSubmit) {
 
-			$mmRefTablenames = $this->damfalfileRepository->getArrayDataFromTable('*', 'tx_dam_mm_ref', "dammmrefnoexportwanted != 1 AND dammmrefalreadyexported != 1 AND tablenames LIKE '%" . $chosenExtension . "%'", $groupBy = 'ident, tablenames', $orderBy = '', $limit = '10000');
+			$mmRefTablenames = $this->damfalfileRepository->getArrayDataFromTable(
+				'*',
+				'tx_dam_mm_ref',
+				"dammmrefnoexportwanted != 1 AND dammmrefalreadyexported != 1 AND tablenames LIKE '%" . $chosenExtension . "%'",
+				$groupBy = 'ident, tablenames',
+				$orderBy = '',
+				$limit = ConfigUtility::getDefaultLimit()
+			);
 			// get idents, tablenames
 			$damIdents = array();
 
@@ -365,7 +408,14 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 				$damIdents[] = array($rowMmRefTablenames['tablenames'], $rowMmRefTablenames['ident'], $stdValueForFALIdentifier);
 			}
 
-			$countedRelationsTotal = $this->damfalfileRepository->getArrayDataFromTable('COUNT(*) AS countedNumber', 'tx_dam_mm_ref', "dammmrefnoexportwanted != 1 AND dammmrefalreadyexported != 1 AND tablenames LIKE '%" . $chosenExtension . "%'", $groupBy = '', $orderBy = '', $limit = '100000');
+			$countedRelationsTotal = $this->damfalfileRepository->getArrayDataFromTable(
+				'COUNT(*) AS countedNumber',
+				'tx_dam_mm_ref',
+				"dammmrefnoexportwanted != 1 AND dammmrefalreadyexported != 1 AND tablenames LIKE '%" . $chosenExtension . "%'",
+				$groupBy = '',
+				$orderBy = '',
+				$limit = ConfigUtility::getDefaultLimit()
+			);
 
 			$this->view->assign('countedRelationsTotal', $countedRelationsTotal[1]['countedNumber']);
 			$this->view->assign('damIdents', $damIdents);

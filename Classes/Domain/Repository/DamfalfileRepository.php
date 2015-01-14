@@ -28,6 +28,8 @@ namespace DMK\Mkdam2fal\Domain\Repository;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use DMK\Mkdam2fal\Utility\ConfigUtility;
+
 /**
  * The repository for Damfalfiles
  */
@@ -965,10 +967,10 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		$parentFileInfo = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			'file_name, file_path',
 			'tx_dam',
-			"uid = '" . $parentID . "'", // where-clause
-			$groupBy = '', // group by
-			$orderBy = '', // order by
-			$limit = '10000' // limit
+			"uid = '" . $parentID . "'",
+			$groupBy = '',
+			$orderBy = '',
+			$limit = ConfigUtility::getDefaultLimit()
 		);
 
 		$rowParentFileInfo = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($parentFileInfo);
@@ -985,10 +987,10 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		$specificFALEntry = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			'uid',
 			'sys_file',
-			"identifier = '" . $identifier . "' and name = '" . $name . "' and sys_language_uid = '" . $languageUid . "'", // where-clause
-			$groupBy = '', // group by
-			$orderBy = '', // order by
-			$limit = '10000' // limit
+			"identifier = '" . $identifier . "' and name = '" . $name . "' and sys_language_uid = '" . $languageUid . "'",
+			$groupBy = '',
+			$orderBy = '',
+			$limit = ConfigUtility::getDefaultLimit()
 		);
 		return $specificFALEntry;
 
@@ -999,10 +1001,10 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		$entries = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			'uid_foreign',
 			'sys_file_reference',
-			"fieldname = '" . $fieldnameSysFileReference . "' AND tablenames = '" . $tablename . "' and deleted <> 1", // where-clause
-			$groupBy = '', // group by
-			$orderBy = '', // order by
-			$limit = '' // limit
+			"fieldname = '" . $fieldnameSysFileReference . "' AND tablenames = '" . $tablename . "' and deleted <> 1",
+			$groupBy = '',
+			$orderBy = '',
+			$limit = ''
 		);
 
 		$arr = array();
@@ -1021,15 +1023,16 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 	}
 
-	public function getArrayDataFromTable($fields, $tablename, $where, $groupBy = '', $orderBy = '', $limit = '10000') {
+	public function getArrayDataFromTable($fields, $tablename, $where, $groupBy = '', $orderBy = '', $limit = NULL) {
+		$limit = $limit === NULL ? ConfigUtility::getDefaultLimit() : $limit;
 
 		$entries = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			$fields,
 			$tablename,
-			$where, // where-clause
-			$groupBy, // group by
-			$orderBy, // order by
-			$limit // limit
+			$where,
+			$groupBy,
+			$orderBy,
+			$limit
 		);
 
 		$arr = array();
@@ -1053,10 +1056,10 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		$txDamEntries = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			'uid, file_path, file_name, sys_language_uid, l18n_parent',
 			'tx_dam',
-			'damalreadyexported <> 1', // where-clause
-			$groupBy = '', // group by
-			$orderBy = '', // order by
-			$limit = '10000' // limit
+			'damalreadyexported <> 1',
+			$groupBy = '',
+			$orderBy = '',
+			$limit = ConfigUtility::getDefaultLimit()
 		);
 
 		return $txDamEntries;

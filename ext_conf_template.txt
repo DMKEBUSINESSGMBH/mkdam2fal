@@ -1,0 +1,2 @@
+# cat=mkdam2fal/config; type=string;label=default limit: the limit of migrations for each run.
+defaultLimit = 5000
