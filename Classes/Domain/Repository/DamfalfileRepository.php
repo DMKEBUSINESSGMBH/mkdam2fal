@@ -171,23 +171,28 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 			// get falCatUid from tx_dam_cat
 			$row = $this->selectOneRowQuery('falCatUid', 'tx_dam_cat', "uid='" . $value['uid_foreign'] . "'", $groupBy = '', $orderBy = '', $limit = '');
 			$falCatUid = $row['falCatUid'];
+				// Missing Link sys_category_record_mm is linked to the sys_file_metadata.uid and not to the sys_file directly
+				// get falCatUid from tx_dam_cat
+			$row = $this->selectOneRowQuery('uid', 'sys_file_metadata', "file='" . $falUid . "'", $groupBy = '', $orderBy = '', $limit = '');
+			$metadataUid = $row['uid'];
 
-			$fieldsValuesCatRef = array();
-			$fieldsValuesCatRef = array(
-				'uid_local' => $falCatUid,
-				'uid_foreign' => $falUid,
-				'tablenames' => 'sys_file',
-				'damCatRefImported' => 1
-			);
+				// Insert record only of catUid and metadataUid are real
+			if ( $falCatUid > 0 && $metadataUid > 0 ) {
+				$fieldsValuesCatRef = array(
+					'uid_local' => $falCatUid,
+					'uid_foreign' => $metadataUid,
+					'tablenames' => 'sys_file_metadata',
+					'damCatRefImported' => 1
+				);
 
-			// update sys_category_record_mm entry
-			$GLOBALS['TYPO3_DB']->exec_INSERTquery (
-				'sys_category_record_mm',
-				$fieldsValuesCatRef,
-				$no_quote_fields = FALSE
-			);
-
-			$falCatRefInfo = $falCatUid . ';' . $falUid . ';sys_file';
+				// update sys_category_record_mm entry
+				$GLOBALS['TYPO3_DB']->exec_INSERTquery (
+					'sys_category_record_mm',
+					$fieldsValuesCatRef,
+					$no_quote_fields = FALSE
+				);
+			}
+			$falCatRefInfo = $falCatUid . ';' . $metadataUid . ';sys_file_metadata';
 
 			$fieldsValuesForDamCatRefValues = array();
 			$fieldsValuesForDamCatRefValues = array(
