@@ -112,7 +112,9 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 	public function insertCategory() {
 
+		$countAllCategories = $this->selectOneRowQuery('count(*) as count', 'tx_dam_cat',  'damcatalreadyexported != 1', '', '', '');
 		$categories = $this->getArrayDataFromTable('*', 'tx_dam_cat', 'damcatalreadyexported != 1', $groupBy = '', $orderBy = '', $limit = '1000');
+		$notAllCategoriesImported = ($countAllCategories['count'] > count($categories));
 
 		foreach ($categories as $rowCategories) {
 			// parent_id, title, nav_title, subtitle, keywords, description
@@ -159,6 +161,10 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		}
 
 
+			// Do not start the reference import before all categories are imported
+		if ($notAllCategoriesImported) {
+			return;
+		}
 
 		$categoriesReferences = $this->getArrayDataFromTable('*', 'tx_dam_mm_cat', 'dammmcatalreadyexported != 1', $groupBy = '', $orderBy = '', $limit = '');
 
@@ -192,6 +198,7 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 					$fieldsValuesCatRef,
 					$no_quote_fields = FALSE
 				);
+
 			}
 			$falCatRefInfo = $falCatUid . ';' . $metadataUid . ';sys_file_metadata';
 
