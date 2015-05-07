@@ -182,6 +182,7 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 					'uid_local' => $falCatUid,
 					'uid_foreign' => $metadataUid,
 					'tablenames' => 'sys_file_metadata',
+					'fieldname' => 'categories',
 					'damCatRefImported' => 1
 				);
 
