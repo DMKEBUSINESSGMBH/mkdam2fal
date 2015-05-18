@@ -661,6 +661,12 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		return $this->_storages;
 	}
 
+	/**
+	 * Liefert die UID des FAL-Storage, der für eine Datei verwendet werden soll. Dafür wird das Verzeichnis
+	 * der Datei mit dem konfigurierten basePath des Storage abgeglichen.
+	 * @param string $filepath
+	 * @param string $filename
+	 */
 	public function getStorageForFile($filepath, $filename) {
 		foreach($this->getStorages() as $storage) {
 			$basePath = $storage['configuration']['basePath'];

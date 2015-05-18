@@ -84,13 +84,13 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 		);
 
 		if ($txDamEntriesNotImported) {
-
 			// if button was pressed start the tx_dam transfer
 			if ($executeDamUpdateSubmit) {
 
 				foreach ($txDamEntriesNotImported as $rowDamEntriesNotImported) {
 
 					// get subpart from tx_dam.file_path to compare later on with sys_file.identifier; complete it to FAL identifier
+					// Die Variable ist ein String mit Verzeichnis- und Dateiname
 					$completeIdentifierForFAL = $this->damfalfileRepository->getIdentifier(
 						$rowDamEntriesNotImported['file_path'],
 						$rowDamEntriesNotImported['file_name'],
@@ -191,6 +191,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 								$orderBy = '',
 								$limit = ConfigUtility::getDefaultLimit()
 							);
+
 							// if a fal entry was found take that uid otherwise insert fal entry
 							if ($foundFALEntryWhichHasNoFilemetadata){
 								// update fal entry
