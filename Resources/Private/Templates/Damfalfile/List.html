@@ -7,6 +7,7 @@
 
             {txDamEntriesProgressArray.actualcount} <f:translate key="tx_mkdam2fal_domain_model_damfalfile.of"/> {txDamEntriesProgressArray.overall} <f:translate key="tx_mkdam2fal_domain_model_damfalfile.dataexported"/>.<br/>
             <f:form action="list" name="damentryform">
+                <f:form.checkbox name="debug" value="1" />Debug<br/>
                 <f:form.submit value="{f:translate(key: 'tx_mkdam2fal_domain_model_damfalfile.submitButton')}" name="executeDamUpdateSubmit" />
             </f:form>
 
