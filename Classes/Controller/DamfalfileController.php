@@ -61,16 +61,16 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 	 * action list
 	 *
 	 * @param string $executeDamUpdateSubmit
+	 * @param int $debug Funktioniert noch nicht. Sch$%! Fluid!
 	 * @return void
 	 */
-	public function listAction($executeDamUpdateSubmit = '') {
+	public function listAction($executeDamUpdateSubmit = '', $debug = 0) {
 
 		$this->view->assign('tabInteger',0);
 
 		$pathSite = $this->getRightPath();
 		$this->view->assign('pathSite',$pathSite);
 		$this->view->assign('pathLogs',$this->getLogPath());
-
 		// action for updating inserting the DAM-entrys from tx_dam
 
 		// checks if there are files to import and get them; if there are no files redirect to referenceUpdateAction
@@ -87,7 +87,9 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 
 			// if button was pressed start the tx_dam transfer
 			if ($executeDamUpdateSubmit) {
-
+				// Verzeichnisliste mit Dateien ohne FAL-Referenz
+				$pathList = array();
+				
 				foreach ($txDamEntriesNotImported as $rowDamEntriesNotImported) {
 
 					// get subpart from tx_dam.file_path to compare later on with sys_file.identifier; complete it to FAL identifier
@@ -119,6 +121,14 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 						$orderBy = '',
 						$limit = ConfigUtility::getDefaultLimit()
 					);
+
+					if(!$foundFALEntry) {
+						$path = $rowDamEntriesNotImported['file_path'];
+						if(!array_key_exists($path, $pathList))
+							$pathList[$path] = 1;
+						else
+							$pathList[$path] = $pathList[$path] + 1;
+					}
 
 					// if a FAL entry is found compare information and update it if necessary
 					if ($foundFALEntry["uid"] > 0) {
@@ -205,6 +215,15 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 						}
 					}
 				}
+
+				// Zum Debug bei BPI
+// 				ksort($pathList);
+// 				\tx_rnbase_util_Debug::debug(array(
+// 						'$path'=>$pathList,
+// 						'Anzahl' => count($pathList),
+// 				), __FILE__.':'.__LINE__); // TODO: remove me
+// 				exit();
+				
 				// Handle frontend group permission
 				$this->damfalfileRepository->migrateFrontendGroupPermissions();
 				$this->redirect('list', NULL, NULL, NULL, NULL);
