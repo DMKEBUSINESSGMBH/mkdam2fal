@@ -1,4 +1,4 @@
-﻿.. ==================================================
+.. ==================================================
 .. FOR YOUR INFORMATION
 .. --------------------------------------------------
 .. -*- coding: utf-8 -*- with BOM.
@@ -7,9 +7,9 @@
 
 .. _start:
 
-=============================================================
-DAM2FAL 6.2
-=============================================================
+=============
+MKDAM2FAL 6.2
+=============
 
 .. only:: html
 
@@ -23,7 +23,7 @@ DAM2FAL 6.2
 		en
 
 	:Description:
-		This extension migrates your Dam-data into FAL. MKDAM2FAL is a Fork of the we_dam2fal Extension with additional features.
+		This extension migrates your Dam-data into FAL. MKDAM2FAL is a fork of the we_dam2fal Extension with additional features.
 
 	:Keywords:
 		dam-converter, dam-fal-migration, dam-migration, dam-file-converter, dam-fal-data, forAdmins, forAdvanced, forDevelopers
@@ -32,7 +32,7 @@ DAM2FAL 6.2
 		2015
 
 	:Author:
-		Michael Wagner - DMK E-BUSINESS GmbH, Daniel Hasse - websedit AG
+		Michael Wagner - DMK E-BUSINESS GmbH, Pavel Klinkov - DMK E-BUSINESS, René Nitzsche - DMK E-BUSINESS, GmbH Daniel Hasse - websedit AG
 
 	:Email:
 		dev@dmk-ebusiness.de

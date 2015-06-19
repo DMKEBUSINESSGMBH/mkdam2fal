@@ -1,4 +1,4 @@
-﻿.. ==================================================
+.. ==================================================
 .. FOR YOUR INFORMATION
 .. --------------------------------------------------
 .. -*- coding: utf-8 -*- with BOM.
@@ -11,7 +11,7 @@
 Users Manual
 ============
 
-By clicking on the “DAM2FAL 6.2 dataimport” module, which is placed under the “ADMIN TOOLS” module, you will see the following view:
+By clicking on the “MKDAM2FAL 6.2 dataimport” module, which is placed under the “ADMIN TOOLS” module, you will see the following view:
 
 .. figure:: ../Images/UserManual/abbildung1.png
    :width: 457px
@@ -19,7 +19,7 @@ By clicking on the “DAM2FAL 6.2 dataimport” module, which is placed under th
 
    Illustration 1: DAM data
    
-There are four different tabs: “DAM data”, “DAM relations”, “Update tables” and “DAM categories”. 
+There are four different tabs: “DAM data”, “DAM relations”, “Update tables” and “DAM categories”.
 Step 1 is to import all information of the DAM indexed files. Illustration 1 shows you an example of 31 indexed files, which have to be transferred from DAM to FAL. This process will be started by clicking on the “Submit”-button. Dependent on the amount of  files, which have to be transferred, the process will take several minutes. If the process has finished, it will be shown in the area “Progress”. In this case you will see the information “31 of 31 data imported to FAL”.
 
 If all DAM data information is transferred, the next step is to use the tab “DAM relations”. With this tab you are able to transfer the relations of the DAM structure into the FAL structure. This is necessary for the standard content elements of TYPO3 and all used extensions, which are using DAM data:
