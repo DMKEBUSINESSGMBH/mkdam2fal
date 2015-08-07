@@ -213,7 +213,7 @@
 			</trans-unit>
 			
 			<trans-unit id="tx_mkdam2fal_domain_model_damfalfile.updatettcontentrte">
-				<source>tt_content RTE filelink update</source>
+				<source>tt_content and tt_news RTE filelink update</source>
 			</trans-unit>
 			
 			<trans-unit id="tx_mkdam2fal_domain_model_damfalfile.updatettcontentthumbnailtooltip">
@@ -221,7 +221,7 @@
 			</trans-unit>
 			
 			<trans-unit id="tx_mkdam2fal_domain_model_damfalfile.updatettcontentrtetooltip">
-				<source>Checks the tt_content RTE texts for the old media-tag and replaces the media-tag with the new file-tag.</source>
+				<source>Checks the tt_content and tt_news RTE texts for the old media-tag and replaces the media-tag with the new file-tag.</source>
 			</trans-unit>
 			
 			<trans-unit id="tx_mkdam2fal_domain_model_damfalfile.tablenametooltip">

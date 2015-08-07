@@ -40,6 +40,7 @@ $EM_CONF[$_EXTKEY] = array (
 				'fluid' => '6.2.0-6.2.99',
 				'typo3' => '6.2.5-6.2.99',
 				'filemetadata' => '6.2.0-6.2.99',
+				'rn_base' => '0.15.0-0.0.0',
 			),
 		'conflicts' =>
 			array (

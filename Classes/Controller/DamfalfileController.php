@@ -28,6 +28,8 @@ namespace DMK\Mkdam2fal\Controller;
 
 use DMK\Mkdam2fal\Utility\ConfigUtility;
 
+\tx_rnbase::load('tx_rnbase_util_Extensions');
+
 /**
  * DamfalfileController
  */
@@ -503,8 +505,14 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 			}
 
 			if ($rteFilelinkTest) {
-				$this->convertRteMediaTag4ttcontent();
-				$this->convertRteMediaTag4ttnews();
+				$infos = array();
+				
+				if($infoArr = $this->convertRteMediaTag4ttcontent())
+					$infos[] = $infoArr;
+				if($infoArr = $this->convertRteMediaTag4ttnews())
+					$infos[] = $infoArr;
+				if(!empty($infos))
+					$this->view->assign('infos',  $infos);
 			}
 		}
 
@@ -551,21 +559,27 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 	private function convertRteMediaTag4ttcontent() {
 		$ttContentEntriesBodytext = $this->damfalfileRepository->getArrayDataFromTable('uid, bodytext', 'tt_content', 'deleted <> 1 AND bodytext IS NOT NULL', $groupBy = '', $orderBy = '', $limit = '');
 
+		$info = array('skipped' => 0, 'success' => 0, 'records' => 0);
 		foreach ($ttContentEntriesBodytext as $bodytextValue) {
-
+				
 			$falLinkBodytext = $bodytextValue['bodytext'];
 
+			$matches = array();
 			preg_match_all("/<media ([0-9]{1,})/",$falLinkBodytext,$matches);
 			if(count($matches[1]) > 0 ) {
+				$doUpdate = TRUE;
 				foreach ($matches[1] as $match) {
 					$rowDamInfo = $this->damfalfileRepository->selectOneRowQuery('falUid', 'tx_dam', "uid = '" . $match . "'");
 					if($rowDamInfo['falUid'] == 0) {
 						// Die Datei wurde nicht konvertiert. Wir lassen den Datensatz besser unverändert, sonst
 						// Geht die Relation komplett verloren
-						break;
+						$info['skipped'] += 1;
+						$doUpdate = FALSE;
 					}
 					$falLinkBodytext = str_replace('<media ' . $match, '<media ' . $rowDamInfo['falUid'], $falLinkBodytext);
 				}
+				if(!$doUpdate)
+					continue;
 				
 				$falLinkBodytext = str_replace('<media ', '<link file:', $falLinkBodytext);
 				$falLinkBodytext = str_replace('</media>', '</link>', $falLinkBodytext);
@@ -578,32 +592,43 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 				);
 				
 				$this->damfalfileRepository->updateTableEntry('tt_content', "uid = '" . $bodytextValue['uid'] . "'", $fieldsValues);
+				$info['success'] += 1;
 			}
 		}
+		return $info;
 	}
 
 	/**
-	 * Media-Tags für tt_news aktualisieren
+	 * Media-Tags für tt_news aktualisieren, falls die Extension vorhanden ist
 	 */
 	private function convertRteMediaTag4ttnews() {
+		if(! \tx_rnbase_util_Extensions::isLoaded('tt_news')) {
+			return;
+		}
+
+		$info = array('table' => 'tt_news', 'skipped' => 0, 'success' => 0, 'records' => 0);
 		$ttContentEntriesBodytext = $this->damfalfileRepository->getArrayDataFromTable('uid, bodytext', 'tt_news', 'deleted <> 1 AND bodytext IS NOT NULL', $groupBy = '', $orderBy = '', $limit = '');
 
 		foreach ($ttContentEntriesBodytext as $bodytextValue) {
-	
+			$info['records'] += 1;
 			$falLinkBodytext = $bodytextValue['bodytext'];
 	
+			$matches = array();
 			preg_match_all("/<media ([0-9]{1,})/",$falLinkBodytext,$matches);
 			if(count($matches[1]) > 0 ) {
+				$doUpdate = TRUE;
 				foreach ($matches[1] as $match) {
 					$rowDamInfo = $this->damfalfileRepository->selectOneRowQuery('falUid', 'tx_dam', "uid = '" . $match . "'");
 					if($rowDamInfo['falUid'] == 0) {
 						// Die Datei wurde nicht konvertiert. Wir lassen den Datensatz besser unverändert, sonst
 						// Geht die Relation komplett verloren
-						break;
+						$info['skipped'] += 1;
+						$doUpdate = FALSE;
 					}
 					$falLinkBodytext = str_replace('<media ' . $match, '<media ' . $rowDamInfo['falUid'], $falLinkBodytext);
 				}
-				
+				if(!$doUpdate)
+					continue;
 				$falLinkBodytext = str_replace('<media ', '<link file:', $falLinkBodytext);
 				$falLinkBodytext = str_replace('</media>', '</link>', $falLinkBodytext);
 				// $falLinkBodytext = str_replace('<link file:', '<media ', $falLinkBodytext);
@@ -614,8 +639,10 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 				);
 
 				$this->damfalfileRepository->updateTableEntry('tt_news', "uid = '" . $bodytextValue['uid'] . "'", $fieldsValues);
+				$info['success'] += 1;
 			}
 		}
+		return $info;
 	}
 
 	/**

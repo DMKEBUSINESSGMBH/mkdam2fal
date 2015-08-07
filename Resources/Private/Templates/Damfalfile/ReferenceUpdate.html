@@ -149,6 +149,23 @@
 </div>
 
 <div id="tabs-3">
+
+<br/>
+	<f:if condition="{infos}">
+	<f:then>
+		<div class="successnotice">
+			<table cellpadding="0" cellspacing="0" border="0" class="dam2falErrorTable">
+				<tr><th>Table</th><th>Records</th><th>Success</th><th>Skipped</th></tr>
+			<f:for each="{infos}" as="info" iteration="iteratorError" >
+				<tr>
+				<td>{info.table}</td><td>{info.records}</td><td>{info.success}</td><td>{info.skipped}</td>
+				</tr>
+			</f:for>
+			</table>
+		</div>								
+	</f:then>
+	</f:if>
+
     <h2><u><f:translate key="tx_mkdam2fal_domain_model_damfalfile.updatettcontent"/></u></h2>
     <f:form action="referenceUpdate" name="ttcontentupdateform" method="post">
 
