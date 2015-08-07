@@ -559,9 +559,9 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 	private function convertRteMediaTag4ttcontent() {
 		$ttContentEntriesBodytext = $this->damfalfileRepository->getArrayDataFromTable('uid, bodytext', 'tt_content', 'deleted <> 1 AND bodytext IS NOT NULL', $groupBy = '', $orderBy = '', $limit = '');
 
-		$info = array('skipped' => 0, 'success' => 0, 'records' => 0);
+		$info = array('table' => 'tt_content', 'skipped' => 0, 'success' => 0, 'records' => 0);
 		foreach ($ttContentEntriesBodytext as $bodytextValue) {
-				
+			$info['records'] += 1;
 			$falLinkBodytext = $bodytextValue['bodytext'];
 
 			$matches = array();
