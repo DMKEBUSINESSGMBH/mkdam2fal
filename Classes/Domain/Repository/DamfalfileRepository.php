@@ -643,7 +643,7 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 				'uid, name, driver, configuration',
 				'sys_file_storage',
-				'deleted != 1'
+				'deleted != 1 and hidden != 1 and is_online = 1'
 			);
 			for ($row = FALSE; $row = $res->fetch_array();) {
 				// read the config
