@@ -63,21 +63,20 @@
         </div>
         <div id="typo3-docbody">
             <div id="typo3-inner-docbody">
-
-					<div class="tx-mkdam2fal">
-                        <f:render partial="Properties" />
-                        <br/>
-                        <div id="tabs">
-                            <ul>
-                                <li><a href="#tabs-1"><f:translate key="tx_mkdam2fal_domain_model_damfalfile.damdata"/></a></li>
-                                <li><a href="#tabs-2"><f:translate key="tx_mkdam2fal_domain_model_damfalfile.damrelations"/></a></li>
-                                <li><a href="#tabs-3"><f:translate key="tx_mkdam2fal_domain_model_damfalfile.tableproof"/></a></li>
-                                <li><a href="#tabs-4"><f:translate key="tx_mkdam2fal_domain_model_damfalfile.damcategories"/></a></li>
-                            </ul>
-						    <f:render section="main" />
-                        </div>
-					</div>
-
+                <f:flashMessages renderMode="div" />
+                <div class="tx-mkdam2fal">
+                    <f:render partial="Properties" />
+                    <br/>
+                    <div id="tabs">
+                        <ul>
+                            <li><a href="#tabs-1"><f:translate key="tx_mkdam2fal_domain_model_damfalfile.damdata"/></a></li>
+                            <li><a href="#tabs-2"><f:translate key="tx_mkdam2fal_domain_model_damfalfile.damrelations"/></a></li>
+                            <li><a href="#tabs-3"><f:translate key="tx_mkdam2fal_domain_model_damfalfile.tableproof"/></a></li>
+                            <li><a href="#tabs-4"><f:translate key="tx_mkdam2fal_domain_model_damfalfile.damcategories"/></a></li>
+                        </ul>
+                        <f:render section="main" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>

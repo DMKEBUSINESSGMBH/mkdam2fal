@@ -105,7 +105,16 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 						$rowDamEntriesNotImported['file_name']
 					);
 
-					// @TODO: create storage, if not exists!?
+					if (!$storageIdForFAL) {
+						$this->addFlashMessage(
+							sprintf("a storage for \"%s\" was not found", $rowDamEntriesNotImported['file_path']),
+							'storage not found',
+							\TYPO3\CMS\Core\Messaging\FlashMessage::ERROR,
+							TRUE
+						);
+						// @TODO: create storage, if not exists!?
+						$this->redirect('list', NULL, NULL, NULL, NULL);
+					}
 
 					// Make sure the imported file exists
 					if (!$completeIdentifierForFAL) {
