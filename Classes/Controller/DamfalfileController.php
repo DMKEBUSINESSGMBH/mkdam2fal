@@ -27,6 +27,7 @@ namespace DMK\Mkdam2fal\Controller;
  ***************************************************************/
 
 use DMK\Mkdam2fal\Utility\ConfigUtility;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 
 \tx_rnbase::load('tx_rnbase_util_Extensions');
 
@@ -673,7 +674,11 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 
 		if ($executeCategoryUpdateSubmit) {
 			// insert all non imported categories
-			$this->damfalfileRepository->insertCategory();
+			try {
+				$this->damfalfileRepository->insertCategory();
+			} catch (\Exception $e) {
+				$this->addFlashMessage($e->getMessage(), 'Error Updating Categories', AbstractMessage::ERROR);
+			}
 		}
 
 		$arguments = array('tabInteger' => 3);

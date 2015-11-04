@@ -136,30 +136,38 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 				$parentcategory = 0;
 			}
 
+			//dam description could be null
+			$damCatDescription = $rowCategories['description'];
+			if ($damCatDescription === NULL)
+				$damCatDescription = '';
+
 			$fieldsValues = array(
 				'deleted' => $rowCategories['deleted'],
 				//'sorting' => $rowCategories['sorting'],
 				't3_origuid' => '0',
 				'title' => $rowCategories['title'],
-				'description' => $rowCategories['description'],
+				'description' => $damCatDescription,
 				'parent' => $parentcategory,
 				'pid' => $rowCategories['pid'],
 				'damCatUid' => $rowCategories['uid'],
 				'hidden' => '0'
 			);
 
-			$GLOBALS['TYPO3_DB']->exec_INSERTquery (
+			$ret = $GLOBALS['TYPO3_DB']->exec_INSERTquery (
 				'sys_category',
 				$fieldsValues,
 				$no_quote_fields = FALSE
 			);
+
+			if ($ret === FALSE) {
+				throw new \RuntimeException("could not insert category");
+			}
 
 			// get last inserted uid from sys_category table
 			$lastInsertedIDForFAL = $GLOBALS['TYPO3_DB']->sql_insert_id();
 
 			$this->updateDAMCategoryTableWithFALId($rowCategories['uid'], $lastInsertedIDForFAL);
 		}
-
 
 			// Do not start the reference import before all categories are imported
 		if ($notAllCategoriesImported) {
