@@ -14,6 +14,7 @@ ChangeLog
 =========  ===========================================================================
 Version    Changes
 =========  ===========================================================================
+1.0.15     | prevent wrong insert statement and check if category insert is successful
 1.0.14     | only check visible and online storages
            | display error message when storage was not found
 1.0.10     | bugfixes and cleanup
