@@ -29,6 +29,7 @@ namespace DMK\Mkdam2fal\Domain\Repository;
  ***************************************************************/
 
 use DMK\Mkdam2fal\Utility\ConfigUtility;
+use Symfony\Component\Yaml\Exception\RuntimeException;
 
 /**
  * The repository for Damfalfiles
@@ -343,7 +344,8 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 			if($alternative == ''){$alternative = NULL;}
 
 			$linkText = $this->sortDescription($row['image_link'], $uidForeign, $txDamMmRefIdent, $tablenames, $damUid);
-			$link = $linkText;
+			//link must not be null
+			$link = $linkText === NULL ? '' : $linkText;
 
 			$sorting = $row['sorting'];
 
@@ -413,6 +415,13 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 		// get last inserted uid from sys_file table
 		$lastInsertedIDForFAL = $GLOBALS['TYPO3_DB']->sql_insert_id();
+
+		if ($lastInsertedIDForFAL == 0) {
+			throw new RuntimeException(
+				"entry in sys_file_reference could not be created for falUid $falUid.\nReason: " .
+				$GLOBALS['TYPO3_DB']->sql_error()
+			);
+		}
 
 		// update
 		$this->updateDAMMMRefTableWithFALId($damUid, $uidForeign, $tablenames, $ident, $lastInsertedIDForFAL);

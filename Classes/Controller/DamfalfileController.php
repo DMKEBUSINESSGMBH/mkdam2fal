@@ -27,6 +27,7 @@ namespace DMK\Mkdam2fal\Controller;
  ***************************************************************/
 
 use DMK\Mkdam2fal\Utility\ConfigUtility;
+use Symfony\Component\Yaml\Exception\RuntimeException;
 
 \tx_rnbase::load('tx_rnbase_util_Extensions');
 
@@ -222,19 +223,19 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 							} else {
 								// update sotrage index should insert all files, so just update
 								// nothing should happen, because it should find sth before
-								//$this->damfalfileRepository->insertFalEntry($rowDamEntriesNotImported['uid']);
+								// $this->damfalfileRepository->insertFalEntry($rowDamEntriesNotImported['uid']);
 							}
 						}
 					}
 				}
 
 				// Zum Debug bei BPI
-// 				ksort($pathList);
-// 				\tx_rnbase_util_Debug::debug(array(
-// 						'$path'=>$pathList,
-// 						'Anzahl' => count($pathList),
-// 				), __FILE__.':'.__LINE__); // TODO: remove me
-// 				exit();
+ 				/*ksort($pathList);
+ 				\tx_rnbase_util_Debug::debug(array(
+ 						'$path'=>$pathList,
+ 						'Anzahl' => count($pathList),
+ 				), __FILE__.':'.__LINE__); // TODO: remove me
+ 				exit();*/
 				
 				// Handle frontend group permission
 				$this->damfalfileRepository->migrateFrontendGroupPermissions();
@@ -340,6 +341,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 								}
 								$existingReferenceForeign = $this->damfalfileRepository->selectOneRowQuery($fields, $rowMmRefInfo['tablenames'], "uid = '" . $rowMmRefInfo['uid_foreign'] . "' and deleted != 1");
 
+
 								if (!empty($GLOBALS['TCA'][$rowMmRefInfo['tablenames']]['ctrl']['languageField'])) {
 									$existingReferenceForeign["sys_language_uid"] = 0;
 								}
@@ -360,12 +362,21 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 												$tablenameGiven = $value[4];
 											}
 											$existingSysFileReference = $this->damfalfileRepository->selectOneRowQuery('uid', 'sys_file_reference', "uid_foreign = '" . $rowMmRefInfo['uid_foreign'] . "' and uid_local = '" . $existingReferenceLocal['falUid'] . "' and sys_language_uid = '" . $existingReferenceForeign['sys_language_uid'] . "' and tablenames = '" . $tablenameGiven . "' and fieldname = '" . $value[1] . "'");
-											if($existingSysFileReference) {
-												// update, just for tt_content
-												$this->damfalfileRepository->updateSysFileReference($existingSysFileReference['uid'], $rowMmRefInfo['uid_foreign'], $tablenameGiven, $rowMmRefInfo['uid_local'], $value[1]);
-											} else {
-												// insert
-												$this->damfalfileRepository->insertSysFileReference($existingReferenceLocal['falUid'], $rowMmRefInfo['uid_foreign'], $tablenameGiven, $value[2], $existingReferenceForeign['sys_language_uid'], $rowMmRefInfo['uid_local'], $value[1], $rowMmRefInfo['tablenames'], $rowMmRefInfo['ident']);
+											try {
+												if($existingSysFileReference) {
+													// update, just for tt_content
+													$this->damfalfileRepository->updateSysFileReference($existingSysFileReference['uid'], $rowMmRefInfo['uid_foreign'], $tablenameGiven, $rowMmRefInfo['uid_local'], $value[1]);
+												} else {
+													// insert
+													$this->damfalfileRepository->insertSysFileReference($existingReferenceLocal['falUid'], $rowMmRefInfo['uid_foreign'], $tablenameGiven, $value[2], $existingReferenceForeign['sys_language_uid'], $rowMmRefInfo['uid_local'], $value[1], $rowMmRefInfo['tablenames'], $rowMmRefInfo['ident']);
+												}
+											} catch (RuntimeException $e) {
+												$errorMessageArray[$counter]['message'] = $e->getMessage();
+												$errorMessageArray[$counter]['tablename'] = $value[4] . ' ' . $value[0];
+												$errorMessageArray[$counter]['identifier'] = $value[1] . ' ' . $value[2];
+												$errorMessageArray[$counter]['uid_foreign'] = $rowMmRefInfo['uid_foreign'];
+												$errorMessageArray[$counter]['uid_local'] = $rowMmRefInfo['uid_local'];
+												$errorMarker = 2;
 											}
 										} else {
 											$errorMessageArray[$counter]['message'] = 'noFALIdWasFoundInDAMTable';
