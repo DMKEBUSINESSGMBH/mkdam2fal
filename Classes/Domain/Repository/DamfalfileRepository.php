@@ -882,7 +882,7 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery (
 			'sys_file_metadata',
 			"file = '" . $falUid . "' AND sys_language_uid = '" . $rowDamInfo['sys_language_uid'] . "'",
-			$fieldsValuesForFALValues,
+			$fieldsValuesForFALMetadataValues,
 			$no_quote_fields = FALSE
 		);
 
