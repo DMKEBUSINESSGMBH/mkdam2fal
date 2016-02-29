@@ -92,7 +92,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 			if ($executeDamUpdateSubmit) {
 				// Verzeichnisliste mit Dateien ohne FAL-Referenz
 				$pathList = array();
-				
+
 				foreach ($txDamEntriesNotImported as $rowDamEntriesNotImported) {
 
 					// get subpart from tx_dam.file_path to compare later on with sys_file.identifier; complete it to FAL identifier
@@ -237,7 +237,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
  						'Anzahl' => count($pathList),
  				), __FILE__.':'.__LINE__); // TODO: remove me
  				exit();*/
-				
+
 				// Handle frontend group permission
 				$this->damfalfileRepository->migrateFrontendGroupPermissions();
 				$this->redirect('list', NULL, NULL, NULL, NULL);
@@ -527,10 +527,12 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 
 			if ($rteFilelinkTest) {
 				$infos = array();
-				
+
 				if($infoArr = $this->convertRteMediaTag4ttcontent())
 					$infos[] = $infoArr;
 				if($infoArr = $this->convertRteMediaTag4ttnews())
+					$infos[] = $infoArr;
+				if($infoArr = $this->convertRteMediaTag4irfaq())
 					$infos[] = $infoArr;
 				if(!empty($infos))
 					$this->view->assign('infos',  $infos);
@@ -578,40 +580,25 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 	 * Media-Tags für tt_content aktualisieren
 	 */
 	private function convertRteMediaTag4ttcontent() {
-		$ttContentEntriesBodytext = $this->damfalfileRepository->getArrayDataFromTable('uid, bodytext', 'tt_content', 'deleted <> 1 AND bodytext IS NOT NULL', $groupBy = '', $orderBy = '', $limit = '');
-
 		$info = array('table' => 'tt_content', 'skipped' => 0, 'success' => 0, 'records' => 0);
+		$rteColumn = 'bodytext';
+		$ttContentEntriesBodytext = $this->damfalfileRepository->getArrayDataFromTable('uid, '.$rteColumn, 'tt_content',
+				'deleted <> 1 AND '.$rteColumn.' IS NOT NULL', $groupBy = '', $orderBy = '', $limit = '');
 		foreach ($ttContentEntriesBodytext as $bodytextValue) {
 			$info['records'] += 1;
-			$falLinkBodytext = $bodytextValue['bodytext'];
+			$falLinkBodytext = $bodytextValue[$rteColumn];
 
 			$matches = array();
 			preg_match_all("/<media ([0-9]{1,})/",$falLinkBodytext,$matches);
 			if(count($matches[1]) > 0 ) {
-				$doUpdate = TRUE;
-				foreach ($matches[1] as $match) {
-					$rowDamInfo = $this->damfalfileRepository->selectOneRowQuery('falUid', 'tx_dam', "uid = '" . $match . "'");
-					if($rowDamInfo['falUid'] == 0) {
-						// Die Datei wurde nicht konvertiert. Wir lassen den Datensatz besser unverändert, sonst
-						// Geht die Relation komplett verloren
-						$info['skipped'] += 1;
-						$doUpdate = FALSE;
-					}
-					$falLinkBodytext = str_replace('<media ' . $match, '<media ' . $rowDamInfo['falUid'], $falLinkBodytext);
-				}
+				$doUpdate = $this->convertRTEMedia2Link($falLinkBodytext, $matches, $info);
 				if(!$doUpdate)
 					continue;
-				
-				$falLinkBodytext = str_replace('<media ', '<link file:', $falLinkBodytext);
-				$falLinkBodytext = str_replace('</media>', '</link>', $falLinkBodytext);
-				// $falLinkBodytext = str_replace('<link file:', '<media ', $falLinkBodytext);
-				// $falLinkBodytext = str_replace('</link>', '</media>', $falLinkBodytext);
-				
-				$fieldsValues = array();
+
 				$fieldsValues = array(
-						'bodytext' => $falLinkBodytext
+						$rteColumn => $falLinkBodytext
 				);
-				
+
 				$this->damfalfileRepository->updateTableEntry('tt_content', "uid = '" . $bodytextValue['uid'] . "'", $fieldsValues);
 				$info['success'] += 1;
 			}
@@ -628,42 +615,96 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 		}
 
 		$info = array('table' => 'tt_news', 'skipped' => 0, 'success' => 0, 'records' => 0);
-		$ttContentEntriesBodytext = $this->damfalfileRepository->getArrayDataFromTable('uid, bodytext', 'tt_news', 'deleted <> 1 AND bodytext IS NOT NULL', $groupBy = '', $orderBy = '', $limit = '');
+		$rteColumn = 'bodytext';
+		$ttContentEntriesBodytext = $this->damfalfileRepository->getArrayDataFromTable('uid, '.$rteColumn,
+				'tt_news', 'deleted <> 1 AND '.$rteColumn.' IS NOT NULL', $groupBy = '', $orderBy = '', $limit = '');
 
 		foreach ($ttContentEntriesBodytext as $bodytextValue) {
 			$info['records'] += 1;
-			$falLinkBodytext = $bodytextValue['bodytext'];
-	
+			$falLinkBodytext = $bodytextValue[$rteColumn];
+
 			$matches = array();
 			preg_match_all("/<media ([0-9]{1,})/",$falLinkBodytext,$matches);
 			if(count($matches[1]) > 0 ) {
-				$doUpdate = TRUE;
-				foreach ($matches[1] as $match) {
-					$rowDamInfo = $this->damfalfileRepository->selectOneRowQuery('falUid', 'tx_dam', "uid = '" . $match . "'");
-					if($rowDamInfo['falUid'] == 0) {
-						// Die Datei wurde nicht konvertiert. Wir lassen den Datensatz besser unverändert, sonst
-						// Geht die Relation komplett verloren
-						$info['skipped'] += 1;
-						$doUpdate = FALSE;
-					}
-					$falLinkBodytext = str_replace('<media ' . $match, '<media ' . $rowDamInfo['falUid'], $falLinkBodytext);
-				}
+				$doUpdate = $this->convertRTEMedia2Link($falLinkBodytext, $matches, $info);
 				if(!$doUpdate)
 					continue;
-				$falLinkBodytext = str_replace('<media ', '<link file:', $falLinkBodytext);
-				$falLinkBodytext = str_replace('</media>', '</link>', $falLinkBodytext);
-				// $falLinkBodytext = str_replace('<link file:', '<media ', $falLinkBodytext);
-				// $falLinkBodytext = str_replace('</link>', '</media>', $falLinkBodytext);
-				
+
 				$fieldsValues = array(
-						'bodytext' => $falLinkBodytext
+						$rteColumn => $falLinkBodytext
 				);
 
-				$this->damfalfileRepository->updateTableEntry('tt_news', "uid = '" . $bodytextValue['uid'] . "'", $fieldsValues);
+				$this->damfalfileRepository->updateTableEntry('tt_news',
+						"uid = '" . $bodytextValue['uid'] . "'", $fieldsValues);
 				$info['success'] += 1;
 			}
 		}
 		return $info;
+	}
+
+	/**
+	 * Media-Tags für irfaq aktualisieren, falls die Extension vorhanden ist
+	 */
+	private function convertRteMediaTag4irfaq() {
+		if(! \tx_rnbase_util_Extensions::isLoaded('irfaq')) {
+			return;
+		}
+
+		$info = array('table' => 'tx_irfaq_q', 'skipped' => 0, 'success' => 0, 'records' => 0);
+		$rteColumn = 'a';
+		$rteFieldData = $this->damfalfileRepository->getArrayDataFromTable('uid, '.$rteColumn, 'tx_irfaq_q',
+				'deleted <> 1 AND '.$rteColumn.' IS NOT NULL AND '.$rteColumn .' like \'%media%\'');
+
+		foreach ($rteFieldData as $bodytextValue) {
+			$info['records'] += 1;
+			$falLinkBodytext = $bodytextValue[$rteColumn];
+
+			$matches = array();
+			preg_match_all("/<media ([0-9]{1,})/",$falLinkBodytext,$matches);
+			if(count($matches[1]) > 0 ) {
+				$doUpdate = $this->convertRTEMedia2Link($falLinkBodytext, $matches, $info);
+				if(!$doUpdate)
+					continue;
+				// $falLinkBodytext = str_replace('<link file:', '<media ', $falLinkBodytext);
+				// $falLinkBodytext = str_replace('</link>', '</media>', $falLinkBodytext);
+
+				$fieldsValues = array(
+						$rteColumn => $falLinkBodytext
+				);
+				$this->damfalfileRepository->updateTableEntry('tx_irfaq_q',
+						"uid = '" . $bodytextValue['uid'] . "'", $fieldsValues);
+				$info['success'] += 1;
+			}
+		}
+
+		return $info;
+	}
+	/**
+	 * Iteriert über alle Treffen in einem RTE-Feld und ersetzt die DAM-UIDs durch die FAL-UIDs.
+	 *
+	 * @param unknown $falLinkBodytext
+	 * @param unknown $matches
+	 * @param unknown $info
+	 * @return boolean
+	 */
+	private function convertRTEMedia2Link(&$falLinkBodytext, $matches, &$info) {
+		$doUpdate = TRUE;
+		foreach ($matches[1] as $match) {
+			$rowDamInfo = $this->damfalfileRepository->selectOneRowQuery('falUid', 'tx_dam', "uid = '" . $match . "'");
+			if($rowDamInfo['falUid'] == 0) {
+				// Die Datei wurde nicht konvertiert. Wir lassen den Datensatz besser unverändert, sonst
+				// Geht die Relation komplett verloren
+				$info['skipped'] += 1;
+				$doUpdate = FALSE;
+			}
+			$falLinkBodytext = str_replace('<media ' . $match, '<media ' . $rowDamInfo['falUid'], $falLinkBodytext);
+		}
+		if($doUpdate) {
+			$falLinkBodytext = str_replace('<media ', '<link file:', $falLinkBodytext);
+			$falLinkBodytext = str_replace('</media>', '</link>', $falLinkBodytext);
+		}
+
+		return $doUpdate;
 	}
 
 	/**
