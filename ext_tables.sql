@@ -104,3 +104,10 @@ CREATE TABLE tx_dam_mm_cat (
 CREATE TABLE sys_category_record_mm (
 	damCatRefImported int(11) unsigned DEFAULT '0' NOT NULL,
 );
+
+#
+# Add field to table 'tt_content'
+#
+CREATE TABLE tt_content (
+	dam_fe_converted SMALLINT unsigned DEFAULT 0 NOT NULL,
+);

@@ -68,12 +68,26 @@ label.error {
 	font-size:12px;
 }
 
-.tx-mkdam2fal ul, .tx-mkdam2fal ol{
+.tx-mkdam2fal ol{
 
 	list-style: disc;
 	list-style-type:decimal;
 	margin-left:17px;
 	
+}
+
+.tx-mkdam2fal .dam2fal-scrollbox {
+	border: 1px solid #ccc;
+	max-height: 8.5em;
+	overflow: auto;
+}
+
+.tx-mkdam2fal .dam2fal-scrollbox table {
+	width: 100%;
+}
+
+.tx-mkdam2fal .dam2fal-scrollbox table th{
+	text-align: left;
 }
 
 .tableTdPaddingRight td {

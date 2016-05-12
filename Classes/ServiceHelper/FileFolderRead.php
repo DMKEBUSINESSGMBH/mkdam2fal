@@ -41,7 +41,7 @@ class FileFolderRead {
 	 * @param string $chosenExtension
 	 * @param array $errorMessageArray
 	 * @param string $logname
-     * @return void
+     * @return string
      */
 	public function writeLog($chosenExtension, $errorMessageArray, $logname = '') {
 
@@ -76,17 +76,23 @@ class FileFolderRead {
 	}
 
 	/**
-     * function to read a folder
+	 * function to read a folder
 	 *
 	 * @param string $path
-     * @return array
-     */
-	public function getFolderFilenames($path) {
+	 * @param string $filter filter if filename contains filter string
+	 * @return array
+	 */
+	public function getFolderFilenames($path, $filter = '') {
 		$arr = array();
 		if ($handle = opendir($path)) {
 			$counter=0;
 			while (false !== ($file = readdir($handle))) {
 				if ($file != '.' && $file != '..' && $file[0] != '.') {
+					if (!empty($filter)) {
+						if (strpos($file, $filter) === false) {
+							continue;
+						}
+					}
 					$arr[$counter] = $file;
 					$counter++;
 				}

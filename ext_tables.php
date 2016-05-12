@@ -20,7 +20,7 @@ if (TYPO3_MODE === 'BE') {
 		'mod1',	// Submodule key
 		'',						// Position
 		array(
-			'Damfalfile' => 'list,referenceUpdate,updateCategory',
+			'Damfalfile' => 'list,referenceUpdate,updateCategory,updateDamFrontend',
 		),
 		array(
 			'access' => 'user,group',

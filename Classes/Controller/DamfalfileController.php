@@ -62,6 +62,14 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 	protected $backendSessionHandler;
 
 	/**
+	 * damFrontendConverter
+	 *
+	 * @var \DMK\Mkdam2fal\ServiceHelper\DamFrontendConverter
+	 * @inject
+	 */
+	protected $damFrontendConverter;
+
+	/**
 	 * action list
 	 *
 	 * @param string $executeDamUpdateSubmit
@@ -343,7 +351,8 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 								$existingReferenceForeign = $this->damfalfileRepository->selectOneRowQuery($fields, $rowMmRefInfo['tablenames'], "uid = '" . $rowMmRefInfo['uid_foreign'] . "' and deleted != 1");
 
 
-								if (!empty($GLOBALS['TCA'][$rowMmRefInfo['tablenames']]['ctrl']['languageField'])) {
+								if (is_array($existingReferenceForeign) &&
+									!empty($GLOBALS['TCA'][$rowMmRefInfo['tablenames']]['ctrl']['languageField'])) {
 									$existingReferenceForeign["sys_language_uid"] = 0;
 								}
 								if ($existingReferenceForeign) {
@@ -396,7 +405,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 										$errorMarker = 2;
 									}
 								} else {
-									$errorMessageArray[$counter]['message'] = 'noForeignSourceFound';
+									$errorMessageArray[$counter]['message'] = 'noForeignSourceFound or deleted';
 									$errorMessageArray[$counter]['tablename'] = $value[4] . ' ' . $value[0];
 									$errorMessageArray[$counter]['identifier'] = $value[1] . ' ' . $value[2];
 									$errorMessageArray[$counter]['uid_foreign'] = $rowMmRefInfo['uid_foreign'];
@@ -575,6 +584,9 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 				}
 			}
 		}
+
+		//Convert DAM Frontend plugin
+		$this->view->assign('damFePluginProgressArray', $this->damFrontendPluginProgress());
 	}
 	/**
 	 * Media-Tags für tt_content aktualisieren
@@ -736,6 +748,45 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 		$arguments = array('tabInteger' => 3);
 
 		$this->redirect('referenceUpdate', NULL, NULL, $arguments, NULL);
+	}
+
+	/**
+	 * action updateDamFrontend
+	 *
+	 * @param string $executeupdateDamFrontendSubmit
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
+	 */
+	public function updateDamFrontendAction($executeupdateDamFrontendSubmit = '') {
+		if ($executeupdateDamFrontendSubmit) {
+			$this->damFrontendConverter->convertDamFeToFileLinks();
+			$output = array('convert' => $this->damFrontendConverter->getOutput());
+
+			if ($output) {
+				$logFile = $this->fileFolderRead->writeLog('dam_frontend', $output, '');
+			}
+		}
+
+		$arguments = array('tabInteger' => 4);
+
+		$this->redirect('referenceUpdate', NULL, NULL, $arguments, NULL);
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function damFrontendPluginProgress() {
+		// get filename from Logs folder to create download buttons
+		$damFeFilenamesLog = $this->fileFolderRead->getFolderFilenames(
+			PATH_site.'typo3temp/mkdam2fal/logs/', 'log_dam_frontend'
+		);
+
+		$progress = array(
+			'plugins' => $this->damFrontendConverter->getDamFrontendPlugins(),
+			'output' => $this->damFrontendConverter->getOutput(),
+			'damFeFilenamesLog' => $damFeFilenamesLog
+		);
+
+		return $progress;
 	}
 
 	/**

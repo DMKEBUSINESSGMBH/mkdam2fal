@@ -1,3 +1,5 @@
+{namespace dmk=DMK\Mkdam2fal\ViewHelpers}
+
 <f:layout name="Default" />
 
 <f:section name="main">
@@ -251,6 +253,76 @@
         </f:else>
 	</f:if>
 </div>
+<div id="tabs-5">
+	<f:if condition="{damFePluginProgressArray}">
+		<f:then>
+			<p><f:translate key="tx_mkdam2fal_domain_model_damfalfile.damfe_description"/></p>
+
+			<f:for each="{damFePluginProgressArray.plugins}" as="plugin" key="plugintype" >
+				<h2>{plugintype}:</h2>
+				<div class="dam2fal-scrollbox">
+					<table>
+						<thead>
+							<tr>
+								<th>uid</th>
+								<th>pid</th>
+								<th>header</th>
+								<th>converted</th>
+							</tr>
+						</thead>
+						<f:for each="{plugin}" as="content" iteration="iterator">
+							<tr>
+								<td>{content.uid}</td>
+								<td>{content.pid}</td>
+								<td>{content.header}</td>
+								<td>
+									<f:if condition="{content.dam_fe_converted}">
+										<f:then>
+											<f:be.buttons.icon icon="status-status-permission-granted" />
+										</f:then>
+										<f:else>
+											<f:be.buttons.icon icon="status-status-permission-denied" />
+										</f:else>
+									</f:if>
+								</td>
+							</tr>
+						</f:for>
+					</table>
+				</div>
+
+				Total: <dmk:countFilter filter="$subject['dam_fe_converted'] == 1;" subject="{plugin}" /> / <f:count>{plugin}</f:count>
+			</f:for>
+
+			<f:form action="updateDamFrontend" name="updatedamfrontendform" method="post">
+				<f:form.hidden name="tabInteger" value="4" />
+				<br />
+				<f:form.submit
+						value="{f:translate(key: 'tx_mkdam2fal_domain_model_damfalfile.submitButton')}"
+						name="executeupdateDamFrontendSubmit" />
+			</f:form>
+
+			<br/>
+			<f:if condition="{damFePluginProgressArray.damFeFilenamesLog}">
+				<f:then>
+					<i><f:translate key="tx_mkdam2fal_domain_model_damfalfile.logdamfiles"/>:</i>
+					<ul>
+					<f:for each="{damFePluginProgressArray.damFeFilenamesLog}" as="filenames" iteration="iteratorFilenames">
+						<li>
+							<f:link.external uri="{pathLogs}{filenames}">
+								{filenames}
+							</f:link.external>
+						</li>
+					</f:for>
+					</ul>
+				</f:then>
+			</f:if>
+		</f:then>
+		<f:else>
+			<f:translate key="tx_mkdam2fal_domain_model_damfalfile.noDamFrontendPlugin"/>.
+		</f:else>
+	</f:if>
+</div>
+
 <br/><br/>
 
 </f:section>

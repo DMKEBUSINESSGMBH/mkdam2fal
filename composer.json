@@ -22,5 +22,10 @@
 	},
 	"replace": {
 		"typo3-ter/mkdam2fal": "*"
+	},
+	"autoload": {
+	  "psr-4": {
+		"DMK\\Mkdam2fal\\": "Classes/"
+	  }
 	}
 }

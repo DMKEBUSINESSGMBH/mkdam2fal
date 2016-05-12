@@ -77,7 +77,11 @@
 			<trans-unit id="tx_mkdam2fal_domain_model_damfalfile.logfiles">
 				<target>Logdateien des DAM Datenimports fuer Verbindungen</target>
 			</trans-unit>
-			
+
+			<trans-unit id="tx_mkdam2fal_domain_model_damfalfile.logdamfiles">
+				<source>Logfiles of the DAM-Frontend Plugins</source>
+			</trans-unit>
+
 			<trans-unit id="tx_mkdam2fal_domain_model_damfalfile.changeable">
 				<target>aenderbar, falls gewuenscht</target>
 			</trans-unit>
@@ -202,7 +206,21 @@
 			<trans-unit id="tx_mkdam2fal_domain_model_damfalfile.damcategories">
 				<target>DAM Kategorien</target>
 			</trans-unit>
-			
+
+			<trans-unit id="tx_mkdam2fal_domain_model_damfalfile.damfrontend">
+				<target>DAM Frontend</target>
+			</trans-unit>
+
+			<trans-unit id="tx_mkdam2fal_domain_model_damfalfile.damfe_description">
+				<target>
+					Konvertiert dam_frontend_p1 und dam_frontend_p2 Plugins in "file links"-Plugins. dam_frontend_p1 werden
+					in kategoriebasierte "file collections" mit der zugehörigen FAL-Kategorie konvertiert. dam_frontend_p2
+					werden in file collections mit den entsprechend zugeordneten Dateien konvertiert.
+					Derzeit wird nur das Plugin pi1 (Dateiliste) und pi2 unterstützt. Die konvertierten DAM Fe Plugins
+					werden nicht gelöscht, sondern auf "versteckt" gesetzt.
+				</target>
+			</trans-unit>
+
 			<trans-unit id="tx_mkdam2fal_domain_model_damfalfile.importdatafirst">
 				<target>Bitte importieren Sie zuerst alle DAM Datensätze</target>
 			</trans-unit>

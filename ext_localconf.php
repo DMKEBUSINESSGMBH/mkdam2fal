@@ -7,12 +7,12 @@ if (!defined('TYPO3_MODE')) {
 	'DMK.' . $_EXTKEY,
 	'Pi1',
 	array(
-		'Damfalfile' => 'list,referenceUpdate,updateCategory',
+		'Damfalfile' => 'list,referenceUpdate,updateCategory,updateDamFrontend',
 
 	),
 	// non-cacheable actions
 	array(
-		'Damfalfile' => 'list,referenceUpdate,updateCategory',
+		'Damfalfile' => 'list,referenceUpdate,updateCategory,updateDamFrontend',
 
 	)
 );
