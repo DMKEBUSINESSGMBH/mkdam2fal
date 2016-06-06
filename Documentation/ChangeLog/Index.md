@@ -3,6 +3,11 @@ ChangeLog
 
 |Version|Changes|
 |-------|-------|
+|1.0.16| [BUGFIX] avoid wrong db insert statements for file references, add sql error handling|
+|| [BUGFIX] Fix wrong var name when updating sys_file_metadata|
+|| support for irfaq added|
+|| adds convertion option for dam_frontend plugins|
+|| converted documentation to markdown|
 |1.0.15| prevent wrong insert statement and check if category insert is successful|
 |1.0.14| only check visible and online storages|
 || display error message when storage was not found|
