@@ -47,7 +47,7 @@
 										
 										<f:if condition="{iteratorForData.index} == 0">
 											<f:then>
-												<td><f:form.textfield name="identifierArray[{itemIterator.index}][{iteratorForData.index}]" value="{extensionData}" size="40" maxlength="50" />
+												<td><f:form.textfield name="identifierArray[{itemIterator.index}][{iteratorForData.index}]" value="{extensionData}" size="40" maxlength="60" />
 													<f:form.hidden name="identifierArray[{itemIterator.index}][4]" value="{extensionData}" />
 												</td>
 											</f:then>
@@ -55,7 +55,7 @@
 										
 										<f:if condition="{iteratorForData.index} == 1">
 										  <f:then>
-											<td><f:form.textfield name="identifierArray[{itemIterator.index}][{iteratorForData.index}]" value="{extensionData}" size="40" maxlength="50" readonly="dis" class="grey" /></td>
+											<td><f:form.textfield name="identifierArray[{itemIterator.index}][{iteratorForData.index}]" value="{extensionData}" size="40" maxlength="60" readonly="dis" class="grey" /></td>
 										  </f:then>
 										</f:if>
 										
@@ -64,10 +64,10 @@
 
 											<f:if condition="{extensionData}">
 												<f:then>
-													<td><f:form.textfield name="identifierArray[{itemIterator.index}][2]" value="{extensionData}" size="40" maxlength="50" class="falident_{itemIterator.index} required" /></td><td><f:form.checkbox  id="falident_{itemIterator.index}" class="checkboxTrigger" name="identifierArray[{itemIterator.index}][3]" value="isChecked" checked="" /></td>
+													<td><f:form.textfield name="identifierArray[{itemIterator.index}][2]" value="{extensionData}" size="40" maxlength="60" class="falident_{itemIterator.index} required" /></td><td><f:form.checkbox  id="falident_{itemIterator.index}" class="checkboxTrigger" name="identifierArray[{itemIterator.index}][3]" value="isChecked" checked="" /></td>
 												</f:then>
 												<f:else>
-													<td><f:form.textfield name="identifierArray[{itemIterator.index}][2]" value="" size="40" maxlength="50" class="falident_{itemIterator.index} required" /></td><td><f:form.checkbox id="falident_{itemIterator.index}" class="checkboxTrigger" name="identifierArray[{itemIterator.index}][3]" value="isChecked" checked="" /></td>
+													<td><f:form.textfield name="identifierArray[{itemIterator.index}][2]" value="" size="40" maxlength="60" class="falident_{itemIterator.index} required" /></td><td><f:form.checkbox id="falident_{itemIterator.index}" class="checkboxTrigger" name="identifierArray[{itemIterator.index}][3]" value="isChecked" checked="" /></td>
 												</f:else>
 											</f:if>
 
