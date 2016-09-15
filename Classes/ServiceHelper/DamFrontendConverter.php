@@ -47,8 +47,8 @@ class DamFrontendConverter {
 	const DAM_FE_PI_2 = 'dam_frontend_pi2';
 	const DAM_FE_PI_3 = 'dam_frontend_pi3';
 
-	const DB_ITEM_LIMIT = 10; //TODO: remove hard testlimit
-	const DEBUG = TRUE;
+	const DB_ITEM_LIMIT = 20000; //TODO: remove hard testlimit
+	const DEBUG = FALSE;
 
 	protected $force = false;
 
@@ -79,17 +79,17 @@ class DamFrontendConverter {
 	 */
 	public function convertDamFeToFileLinks() {
 		$this->preSetup();
-		
+
 		$this->info('search for dam_frontend_pi1 plugins');
 		$this->convertDamFePi(self::DAM_FE_PI_1, function($row) {
 			return $this->convertPi1Item($row);
 		});
-		
-		$this->info('search for dam_frontend_pi2 plugins');		
+
+		$this->info('search for dam_frontend_pi2 plugins');
 		$this->convertDamFePi(self::DAM_FE_PI_2, function($row) {
 			return $this->convertPi2Item($row);
 		});
-		
+
 		$this->printStats();
 
 		$this->cleanUp();
@@ -166,24 +166,17 @@ class DamFrontendConverter {
 	 * @return array
 	 */
 	private function getTtContentElements($where, $callback=NULL) {
-		
+
 		$options = array(
 			'enablefieldsoff' => 1,
 			'limit' => self::DB_ITEM_LIMIT,
-			'where' => '(' . $where . ') AND deleted=0',
+			'where' => '(' . $where . ') AND deleted=0 AND pid > 0',
 		);
-		 
-		/* Zum Testzweck Projektbezogen um nur an einem spezifischen Element zu Testen
-		$options = array(
-				'enablefieldsoff' => 1,
-				'limit' => self::DB_ITEM_LIMIT,
-				'where' => '(' . $where . ') AND deleted=0 AND uid = 2194', 
-		);
-		*/
+
 		if ($callback) {
 			$options['callback'] = array($this, $callback);
 		}
-		
+
 		return Tx_Rnbase_Database_Connection::getInstance()->doSelect('*','tt_content', $options);
 	}
 
@@ -270,65 +263,68 @@ class DamFrontendConverter {
 	 * @throws \Exception
 	 */
 	private function convertPi2Item($item) {
-		if ($item['dam_fe_converted'] == '1' || $item['dam_fe_new_created'] == '1') {
+
+		if (
+			$item['dam_fe_converted'] == '1' ||
+			$item['dam_fe_new_created'] == '1' ||
+			$item['tx_damdownloadlist_records'] == ''
+
+		) {
 			return FALSE;
 		}
+
 		$this->info('convert pi2 items');
-		
-		//Datensätze aus tx_dam passend zum item (nur uids)
-		$filteredDamRecordUids = $this->filterActiveDamUids($item['tx_damdownloadlist_records']); //Zugrif lesend		
-		
-		$this->debug('filteredDamRecordUids: ' . var_export($filteredDamRecordUids, TRUE));
-		
-		//neues element wird hier eingefügt
+
+		//records from tx_dam fitting for item (only uids)
+		$filteredDamRecordUids = $this->filterActiveDamUids($item['tx_damdownloadlist_records']);
+
+		//new 'File Link' element
 		$fileLinksUid = $this->createNewFileLinks($item);
-		
-		$this->fixTemplaVoilaPageEntry($item, $fileLinksUid);
+
+		//$this->fixTemplaVoilaPageEntry($item, $fileLinksUid);
 		$this->fixTemplaVoilaFileLinkEntryInFce($item, $fileLinksUid);
 
 		$this->info('tt_content uid: ' . $item['uid'] . ' ' . $item['header'] . ' on pid ' . $item['pid']
 				. ' Anzahl Files:' . sizeof($filteredDamRecordUids), 2);
-		
-		//verbindung new element to fall für alle dateien aus dam
+
+		//relation new element 'File Link' to FAL for all files from dam
 		foreach ($filteredDamRecordUids as $damRecordUid) {
 			$falUid = $this->getFalUidFromDam($damRecordUid);
-			
 			if (!$falUid) {
-				throw new \RuntimeException('no FAL file found for damUid ' . $damRecordUid);
-			}
-			//wenn neues element erzeugt
-			if ($fileLinksUid !== FALSE) {
-				\tx_rnbase_util_TSFAL::addReference('tt_content', 'media', $fileLinksUid, $falUid, $item['pid']);
-				$this->debug('Reference created for sys_file ' . $falUid, 2);
-				
-				Tx_Rnbase_Database_Connection::getInstance()->doUpdate(
-						'tt_content', 'uid='.$item['uid'],
-						array('dam_fe_converted' => '1', 'hidden' => '1')
-				);
+				//throw new \RuntimeException('no FAL file found for damUid ' . $damRecordUid);
+				$this->error('no FAL file found for damUid: ' . $damRecordUid);
+			} else {
+				//set references if new elemente 'File Link' is created
+				if ($fileLinksUid !== FALSE) {
+					$refid = \tx_rnbase_util_TSFAL::addReference('tt_content', 'media', $fileLinksUid, $falUid, $item['pid']);
+
+					//add title to reference
+					if($refTitle = $this->getDamTitle($damRecordUid)) {
+						Tx_Rnbase_Database_Connection::getInstance()->doUpdate(
+							'sys_file_reference', 'uid='.$refid,
+							array('title' => $refTitle)
+						);
+					}
+					//add description to reference
+					if ($refDescription = $this->getDamDescription($damRecordUid)) {
+						Tx_Rnbase_Database_Connection::getInstance()->doUpdate(
+							'sys_file_reference', 'uid='.$refid,
+							array('description' => $refDescription)
+						);
+					}
+
+					$this->debug('Reference created for sys_file ' . $falUid, 2);
+					//sign old element as converted
+					Tx_Rnbase_Database_Connection::getInstance()->doUpdate(
+							'tt_content', 'uid='.$item['uid'],
+							array('dam_fe_converted' => '1', 'hidden' => '1')
+					);
+				}
 			}
 		}
 		return TRUE;
 	}
-	/* ist zu löschen, brauchte nur um zu verstehen was "addReference" macht
-	public static function addReference($tableName, $fieldName, $itemId, $mediaUid, $pId = 0) {
-		$data = array();
-		$data['pid'] = $pId;
-		$data['uid_foreign'] = $itemId;
-		$data['uid_local'] = $mediaUid;
-		$data['tstamp'] = $data['crdate'] = time();
-		$data['tablenames'] = $tableName;
-		$data['fieldname'] = $fieldName;
-		$data['sorting_foreign'] = 1;
-		$data['table_local'] = 'sys_file';
-	
-		$id = tx_rnbase_util_DB::doInsert('sys_file_reference', $data);
-	
-		// Now count all items
-		self::updateImageCount($tableName, $fieldName, $itemId);
-	
-		return $id;
-	}
-	*/
+
 	/**
 	 * @param $damRecordUids
 	 * @return mixed
@@ -344,6 +340,32 @@ class DamFrontendConverter {
 			return $res;
 		}, array());
 		return $result;
+	}
+
+	/**
+	 * @param $damId
+	 * @return mixed
+	 */
+	private function getDamTitle($damId) {
+		$options = array(
+				'enablefieldsoff' => 1,
+				'where' => 'uid = '.$damId.' AND deleted=0'
+		);
+		$result = reset(Tx_Rnbase_Database_Connection::getInstance()->doSelect('title', 'tx_dam', $options));
+		return ($result && array_key_exists('title', $result)) ? $result['title'] : FALSE;
+	}
+
+	/**
+	 * @param $damId
+	 * @return mixed
+	 */
+	private function getDamDescription($damId) {
+		$options = array(
+				'enablefieldsoff' => 1,
+				'where' => 'uid = '.$damId.' AND deleted=0'
+		);
+		$result = reset(Tx_Rnbase_Database_Connection::getInstance()->doSelect('description', 'tx_dam', $options));
+		return ($result && array_key_exists('description', $result)) ? $result['description'] : FALSE;
 	}
 
 	/**
@@ -365,12 +387,22 @@ class DamFrontendConverter {
 	 * @@return int|false
 	 */
 	protected function getFalUidFromDam($damUid) {
-		$options = array(
+		$options_a = array(
 			'enablefieldsoff' => 1,
 			'where' => 'damUid=' . $damUid,
 		);
-		$result = reset(Tx_Rnbase_Database_Connection::getInstance()->doSelect('uid', 'sys_file', $options));
-		return ($result && array_key_exists('uid', $result)) ? $result['uid'] : FALSE;
+		$options_b = array(
+				'enablefieldsoff' => 1,
+				'where' => 'uid=' . $damUid,
+		);
+		$result = reset(Tx_Rnbase_Database_Connection::getInstance()->doSelect('uid', 'sys_file', $options_a));
+		$result = ($result && array_key_exists('uid', $result)) ? $result['uid'] : FALSE;
+		//if no result try to get from tx_dam table
+		if (!$result) {
+			$result = reset(Tx_Rnbase_Database_Connection::getInstance()->doSelect('falUid', 'tx_dam', $options_b));
+			$result = ($result && array_key_exists('falUid', $result)) ? $result['falUid'] : FALSE;
+		}
+		return $result;
 	}
 
 	/**
@@ -420,7 +452,7 @@ class DamFrontendConverter {
 //		//$categoryCol = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\Collection\\CategoryBasedFileCollection');
 //		$col = CategoryBasedFileCollection::create(array(
 //			'uid' => 'NEW123',
-//			'pid' => \tx_mkkvbb_util_MiscTools::getStoragePid(),
+//			'pid' => \tx_mktest_util_MiscTools::getStoragePid(),
 //			'title' => $falCategory['title'],
 //			'category' => $falCategory['uid'],
 //			'description' => $falCategory['description']
@@ -464,6 +496,8 @@ class DamFrontendConverter {
 	 * @return false|int Uid of new filelinks
 	 */
 	private function createNewFileLinks($oldItem, $fileCollectionUids=array()) {
+		//$this->debug('$oldItem: ' . var_export($oldItem, TRUE));
+
 		//not nice but needed
 		$GLOBALS['BE_USER']->user['admin'] = 1;
 
@@ -483,6 +517,7 @@ class DamFrontendConverter {
 		$item['fe_group'] = $oldItem['fe_group'];
 		$item['CType'] = 'uploads';
 		$item['list_type'] = '';
+		$item['filelink_size'] = '1';
 		$item['file_collections'] = implode(',', $fileCollectionUids);
 
 		$data = array(
@@ -540,42 +575,38 @@ class DamFrontendConverter {
 		return Tx_Rnbase_Database_Connection::getInstance()
 				->doUpdate('pages', $options['where'], array('tx_templavoila_flex' => $templavoilaFlex));
 	}
-	
+
 	/**
 	 * fix Position of new FileLink in TemplaVoila FCE
 	 *
-	 * @param array $row
+	 * @param array $row oldItem
 	 * @param int $fileLinksUid
 	 * @return bool
 	 */
 	private function fixTemplaVoilaFileLinkEntryInFce($row, $fileLinksUid) {
-		$this->debug("\n TEST TEST\n");
-		
+
+		if ($row['pid'] < 0) {
+			return TRUE;
+		}
 		$options = array(
 				'enablefieldsoff' => 1,
 				'where' => 'pid = ' . $row['pid'] . ' AND deleted=0 AND CType=\'templavoila_pi1\' AND ( tx_templavoila_flex LIKE \'%field_content_left%\' OR  tx_templavoila_flex LIKE \'%field_sidebar%\') ',
 		);
-		$fce = reset(Tx_Rnbase_Database_Connection::getInstance()->doSelect('*', 'tt_content', $options));
-		
-		//$this->debug("\n tv flex: ".$fce['tx_templavoila_flex']."TEST\n");
-		//$this->debug("\n fileLinkUid: ".$fileLinksUid."TEST\n");
-		
-		if (strstr($page['tx_templavoila_flex'], $fileLinksUid) !== FALSE) // do not insert same id twice
-			return FALSE;	
-	
-			$templavoilaFlex = StringUtility::addUidStr($fce['tx_templavoila_flex'], $row['uid'], $fileLinksUid);
-	
-			$this->debug("\ntt_conttent flexVOR: " . $fce['tx_templavoila_flex'] . "\ntt_content felxNACH: $templavoilaFlex\n\n");
-		
-		$options = array(
-				'enablefieldsoff' => 1,
-				'where' => 'uid = ' . $fce['uid'],
-		);		
-		//$this->debug("\n fce_pid: ".$fce['uid']." \n");		
-		
-		return Tx_Rnbase_Database_Connection::getInstance()
-		->doUpdate('tt_content', $options['where'], array('tx_templavoila_flex' => $templavoilaFlex));
-		
+		$fces = Tx_Rnbase_Database_Connection::getInstance()->doSelect('*', 'tt_content', $options);
+
+		foreach ($fces AS $fce) {
+			if (strstr($fce['tx_templavoila_flex'], $fileLinksUid) !== FALSE) { // do not insert same id twice
+			} else {
+				$templavoilaFlex = StringUtility::addUidStr($fce['tx_templavoila_flex'], $row['uid'], $fileLinksUid);
+				$this->debug("\ntt_conttent flexVOR: " . $fce['tx_templavoila_flex'] . "\ntt_content felxNACH: $templavoilaFlex\n\n");
+				$options_a = array(
+						'enablefieldsoff' => 1,
+						'where' => 'uid = ' . $fce['uid'],
+				);
+				Tx_Rnbase_Database_Connection::getInstance()
+				->doUpdate('tt_content', $options_a['where'], array('tx_templavoila_flex' => $templavoilaFlex));
+			}
+		}
 		return TRUE;
 	}
 
