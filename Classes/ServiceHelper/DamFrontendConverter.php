@@ -52,6 +52,8 @@ class DamFrontendConverter {
 
 	protected $force = false;
 
+	protected $migratedElements = array();
+
 	protected static $progress = array(
 		self::DAM_FE_PI_1 => array('success' => 0, 'error' => 0, 'found' => 0, 'skipped' => 0),
 		self::DAM_FE_PI_2 => array('success' => 0, 'error' => 0, 'found' => 0, 'skipped' => 0)
@@ -93,6 +95,9 @@ class DamFrontendConverter {
 		$this->printStats();
 
 		$this->cleanUp();
+
+		$fileFolderRead = tx_rnbase::makeInstance('DMK\\Mkdam2fal\\ServiceHelper\\FileFolderRead');
+		$fileFolderRead->writeCsvLog($this->migratedElements, 'damfrontend');
 	}
 
 	private function preSetup() {
@@ -329,6 +334,9 @@ class DamFrontendConverter {
 				}
 			}
 		}
+
+		// Save as array with old and new content element id for further usage
+		$this->migratedElements[] = array($item['uid'], $fileLinksUid);
 		return TRUE;
 	}
 

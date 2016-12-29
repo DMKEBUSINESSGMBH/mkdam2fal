@@ -76,6 +76,40 @@ class FileFolderRead {
 	}
 
 	/**
+     * function to write a log and save it in a file as csv
+	 *
+	 * @param string $chosenExtension
+	 * @param array $errorMessageArray
+	 * @param string $logname
+     * @return string
+     */
+	public function writeCsvLog($data, $logname = '') {
+
+		$folderpath = PATH_site . 'typo3temp/mkdam2fal/logs/';
+
+		if ($logname) {
+			$filename = $folderpath . $logname . '.csv';
+		} else {
+			$filename = $folderpath . 'log_' . date('Y-m-d-H_i_s') . '.csv';
+		}
+
+		if (!$handle = fopen($filename, 'a')) {
+			// echo 'no handle';
+			exit;
+		}
+
+		fputcsv($handle, array('old','new'));
+
+		foreach ($data as $line) {
+			fputcsv($handle, $line);
+		}
+
+		fclose($handle);
+
+		return $filename;
+	}
+
+	/**
 	 * function to read a folder
 	 *
 	 * @param string $path
