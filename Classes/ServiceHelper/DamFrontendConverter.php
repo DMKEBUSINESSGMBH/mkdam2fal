@@ -287,8 +287,10 @@ class DamFrontendConverter {
 		$this->info('tt_content uid: ' . $item['uid'] . ' ' . $item['header'] . ' on pid ' . $item['pid']
 				. ' Anzahl Files:' . sizeof($filteredDamRecordUids), 2);
 
+		$elementCounter = 0;
 		//relation new element 'File Link' to FAL for all files from dam
 		foreach ($filteredDamRecordUids as $damRecordUid) {
+			$elementCounter++;
 			$falUid = $this->getFalUidFromDam($damRecordUid);
 			if (!$falUid) {
 				//throw new \RuntimeException('no FAL file found for damUid ' . $damRecordUid);
@@ -298,6 +300,11 @@ class DamFrontendConverter {
 				if ($fileLinksUid !== FALSE) {
 					$refid = \tx_rnbase_util_TSFAL::addReference('tt_content', 'media', $fileLinksUid, $falUid, $item['pid']);
 
+					// sorting of elements
+					Tx_Rnbase_Database_Connection::getInstance()->doUpdate(
+						'sys_file_reference', 'uid='.$refid,
+						array('sorting_foreign' => $elementCounter)
+					);
 					//add title to reference
 					if($refTitle = $this->getDamTitle($damRecordUid)) {
 						Tx_Rnbase_Database_Connection::getInstance()->doUpdate(
@@ -332,7 +339,8 @@ class DamFrontendConverter {
 	private function filterActiveDamUids($damRecordUids) {
 		$options = array(
 			'enablefieldsoff' => 1,
-			'where' => 'uid IN ('.$damRecordUids.') AND deleted=0'
+			'where' => 'uid IN ('.$damRecordUids.') AND deleted=0',
+			'orderby' => 'FIELD(uid, ' . $damRecordUids . ')'
 		);
 		$rows = Tx_Rnbase_Database_Connection::getInstance()->doSelect('uid', 'tx_dam', $options);
 		$result = array_reduce($rows, function($res, $item) {
