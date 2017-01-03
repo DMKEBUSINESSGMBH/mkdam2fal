@@ -96,7 +96,7 @@ class DamFrontendConverter {
 
 		$this->cleanUp();
 
-		$fileFolderRead = tx_rnbase::makeInstance('DMK\\Mkdam2fal\\ServiceHelper\\FileFolderRead');
+		$fileFolderRead = \tx_rnbase::makeInstance('DMK\\Mkdam2fal\\ServiceHelper\\FileFolderRead');
 		$fileFolderRead->writeCsvLog($this->migratedElements, 'damfrontend');
 	}
 
