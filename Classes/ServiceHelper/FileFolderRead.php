@@ -69,6 +69,7 @@ class FileFolderRead {
 			}
 			fwrite($handle, "\r\n");
 		}
+		fwrite($handle, "Finish\r\n");
 
 		fclose($handle);
 
