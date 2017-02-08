@@ -115,9 +115,10 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 						$rowDamEntriesNotImported['file_name']
 					);
 
-					if (!$storageIdForFAL) {
+					//if this is a translation record there will be no storage else no storage is bad
+					if (!$storageIdForFAL && $rowDamEntriesNotImported['l18n_parent'] == 0) {
 						$this->addFlashMessage(
-							sprintf("a storage for \"%s\" was not found", $rowDamEntriesNotImported['file_path']),
+							sprintf("a storage for \"%s\" was not found (Identifier: %s)", $rowDamEntriesNotImported['file_path'], $completeIdentifierForFAL),
 							'storage not found',
 							\TYPO3\CMS\Core\Messaging\FlashMessage::ERROR,
 							TRUE
@@ -164,6 +165,12 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 
 							// get information from parent entry; file_path and file_name
 							$damParentFileInfo = $this->damfalfileRepository->getDamParentInformation($rowDamEntriesNotImported['l18n_parent']);
+
+							//resolve storage ID from parent
+							$storageIdForFAL = $this->damfalfileRepository->getStorageForFile(
+								$damParentFileInfo['filepath'],
+								$damParentFileInfo['filename']
+							);
 
 							// get subpart from tx_dam.file_path to compare later on with sys_file.identifier; complete it to FAL identifier
 							$completeIdentifierForFALWithParentID = $this->damfalfileRepository->getIdentifier($damParentFileInfo['filepath'],$damParentFileInfo['filename']);
@@ -384,32 +391,32 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 												$errorMessageArray[$counter]['message'] = $e->getMessage();
 												$errorMessageArray[$counter]['tablename'] = $value[4] . ' ' . $value[0];
 												$errorMessageArray[$counter]['identifier'] = $value[1] . ' ' . $value[2];
-												$errorMessageArray[$counter]['uid_foreign'] = $rowMmRefInfo['uid_foreign'];
 												$errorMessageArray[$counter]['uid_local'] = $rowMmRefInfo['uid_local'];
+												$errorMessageArray[$counter]['uid_foreign'] = $rowMmRefInfo['uid_foreign'];
 												$errorMarker = 2;
 											}
 										} else {
 											$errorMessageArray[$counter]['message'] = 'noFALIdWasFoundInDAMTable';
 											$errorMessageArray[$counter]['tablename'] = $value[4] . ' ' . $value[0];
 											$errorMessageArray[$counter]['identifier'] = $value[1] . ' ' . $value[2];
-											$errorMessageArray[$counter]['uid_foreign'] = $rowMmRefInfo['uid_foreign'];
 											$errorMessageArray[$counter]['uid_local'] = $rowMmRefInfo['uid_local'];
+											$errorMessageArray[$counter]['uid_foreign'] = $rowMmRefInfo['uid_foreign'];
 											$errorMarker = 2;
 										}
 									} else {
 										$errorMessageArray[$counter]['message'] = 'noLocalSourceFound or FALUid is 0';
 										$errorMessageArray[$counter]['tablename'] = $value[4] . ' ' . $value[0];
 										$errorMessageArray[$counter]['identifier'] = $value[1] . ' ' . $value[2];
-										$errorMessageArray[$counter]['uid_foreign'] = $rowMmRefInfo['uid_foreign'];
 										$errorMessageArray[$counter]['uid_local'] = $rowMmRefInfo['uid_local'];
+										$errorMessageArray[$counter]['uid_foreign'] = $rowMmRefInfo['uid_foreign'];
 										$errorMarker = 2;
 									}
 								} else {
 									$errorMessageArray[$counter]['message'] = 'noForeignSourceFound or deleted';
 									$errorMessageArray[$counter]['tablename'] = $value[4] . ' ' . $value[0];
 									$errorMessageArray[$counter]['identifier'] = $value[1] . ' ' . $value[2];
-									$errorMessageArray[$counter]['uid_foreign'] = $rowMmRefInfo['uid_foreign'];
 									$errorMessageArray[$counter]['uid_local'] = $rowMmRefInfo['uid_local'];
+									$errorMessageArray[$counter]['uid_foreign'] = $rowMmRefInfo['uid_foreign'];
 									$errorMarker = 2;
 								}
 								$counter++;
@@ -488,7 +495,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 			$logFile = $this->fileFolderRead->writeLog($chosenExtension,$errorMessageArray,'');
 		}
 
-		$this->view->assign('errors', count($errorMessageArray) > 200 ? array(0 => array('message' => 'Too many errors. See LOG: ' . $logFile)) : $errorMessageArray);
+		$this->view->assign('errors', count($errorMessageArray) > 500 ? array(0 => array('message' => 'Too many errors. See LOG: ' . $logFile)) : $errorMessageArray);
 		$this->view->assign('errorMarker', $errorMarker);
 
 		// get filename from Logs folder to create download buttons
