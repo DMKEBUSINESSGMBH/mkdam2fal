@@ -109,6 +109,6 @@ CREATE TABLE sys_category_record_mm (
 # Add field to table 'tt_content'
 #
 CREATE TABLE tt_content (
-	dam_fe_converted SMALLINT unsigned DEFAULT 0 NOT NULL,
-	dam_fe_new_created SMALLINT unsigned DEFAULT 0 NOT NULL,
+	dam_fe_converted int(11) unsigned DEFAULT '0' NOT NULL,
+	dam_fe_new_created int(11) unsigned DEFAULT '0' NOT NULL,
 );
