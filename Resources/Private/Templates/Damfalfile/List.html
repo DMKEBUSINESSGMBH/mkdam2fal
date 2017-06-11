@@ -11,6 +11,13 @@
                 <f:form.submit value="{f:translate(key: 'tx_mkdam2fal_domain_model_damfalfile.submitButton')}" name="executeDamUpdateSubmit" />
             </f:form>
 
+            <f:if condition="{logData}">
+            <f:then>
+            Output:
+            <textarea style="width:100%; height:300px">{logData}
+            </textarea>
+            </f:then>
+            </f:if>
         </div>
     </div>
 	<div id="tabs-2"><f:translate key="tx_mkdam2fal_domain_model_damfalfile.importdatafirst"/>.</div>
