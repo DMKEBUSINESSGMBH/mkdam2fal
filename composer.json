@@ -1,7 +1,6 @@
 {
 	"name" : "dmk/mkdam2fal",
 	"description" : "This extension migrates your Dam-data into FAL.",
-	"version" : "1.0.16",
 	"type" : "typo3-cms-extension",
 	"keywords" : ["TYPO3 CMS", "dam", "fal", "migration"],
 	"homepage" : "http://www.dmk-ebusiness.de/",
