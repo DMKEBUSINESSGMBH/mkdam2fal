@@ -4,7 +4,7 @@ namespace DMK\Mkdam2fal\Controller;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2015 DMK E-BUSINESS GmbH (dev@dmk-ebusiness.de)
+ *  (c) 2015-2017 DMK E-BUSINESS GmbH (dev@dmk-ebusiness.de)
  *  (c) 2014 Daniel Hasse - websedit AG <extensions@websedit.de>
  *
  *  All rights reserved
@@ -107,7 +107,8 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 				$pathList = array();
 				
 				foreach ($txDamEntriesNotImported as $rowDamEntriesNotImported) {
-					$logger->writeLog(sprintf('HANDLE FILE %s / %s ',
+					$logger->writeLog(sprintf('HANDLE FILE (DAM %d) %s  "%s" ',
+							$rowDamEntriesNotImported['uid'],
 							$rowDamEntriesNotImported['file_path'],
 							$rowDamEntriesNotImported['file_name']));
 					
@@ -139,6 +140,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 
 					// Make sure the imported file exists
 					if (!$completeIdentifierForFAL) {
+						$logger->writeLog(sprintf('  Skip file because no FAL entry was found!'));
 						// if the file doesnt exist, just place the mark for imported, otherwise the unmarked file will block the process
 						$this->damfalfileRepository->updateDAMTableWithFALId($rowDamEntriesNotImported['uid'], "0");
 						continue;
@@ -171,6 +173,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 
 					// if a FAL entry is found compare information and update it if necessary
 					if ($foundFALEntry["uid"] > 0) {
+						$logger->writeLog(sprintf('  Link to FAL entry %d', $foundFALEntry['uid']));
 
 						$this->damfalfileRepository->updateFALEntry($foundFALEntry['uid'], $rowDamEntriesNotImported['uid']);
 
@@ -207,6 +210,12 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 	protected function isTranslatedDamRecord($rowDamEntry) {
 		return $rowDamEntry['uid'] > 0 and $rowDamEntry['l18n_parent'] > 0 and $rowDamEntry['sys_language_uid'] > 0;
 	}
+	/**
+	 * Relevant for translated records only!
+	 * @param array $rowDamEntry
+	 * @param string $completeIdentifierForFAL
+	 * @param FileLogger $logger
+	 */
 	protected function createNewFalRecord($rowDamEntry, $completeIdentifierForFAL, FileLogger $logger) {
 		// check if there is a parent-entry in tx_dam for the translation
 		if ($this->isTranslatedDamRecord($rowDamEntry)) {
@@ -336,7 +345,8 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 			$tabInteger = 0;
 		}
 		$this->view->assign('tabInteger', $tabInteger);
-
+		$logger = new FileLogger('steps2to5');
+		
 		// $identifierArray 0=chosenTablename, 1=damIdentifier, 2=FALIdentifier, 3=checkboxValue, 4 = damTablename
 
 		$pathSite = $this->getRightPath();
@@ -354,6 +364,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 		$errorMarker = 0;
 		// sys_file_reference should be empty in the beginning, so just insert references
 		if ($executeReferenceUpdateIdentifierSubmit) {
+			$logger->writeLog(sprintf('Start executeReferenceUpdateIdentifier for %s', $chosenExtension));
 
 			$errorMessageArray = array();
 			$errorMarker = 1;
@@ -472,18 +483,22 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 		}
 
 		if ($executeReferenceUpdateSubmit) {
-
+			// Klick auf Submit in Tab 2
+			$logger->writeLog(sprintf('Start executeReferenceUpdate for %s', $chosenExtension));
+			
 			$mmRefTablenames = $this->damfalfileRepository->getArrayDataFromTable(
-				'*',
+				'ident, tablenames',
 				'tx_dam_mm_ref',
 				"dammmrefnoexportwanted != 1 AND dammmrefalreadyexported != 1 AND tablenames LIKE '%" . $chosenExtension . "%'",
 				$groupBy = 'ident, tablenames',
-				$orderBy = '',
+				$orderBy = 'tablenames',
 				$limit = ConfigUtility::getDefaultLimit()
 			);
 			// get idents, tablenames
+			// Die Daten sind für den Aufbau der GUI notwendig
 			$damIdents = array();
-
+			$logger->writeLog(sprintf('  Found %d unprocessed records in tx_dam_mm_ref', count($mmRefTablenames)));
+			
 			foreach ($mmRefTablenames as $rowMmRefTablenames) {
 				// fill array with std values for tt_content and pages
 				if ($rowMmRefTablenames['tablenames'] == 'tt_content') {
@@ -550,6 +565,7 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 			$this->view->assign('ttContentCheck', $ttContentCheck);
 		}
 		if ($executeTTContentTestSubmit) {
+			// Das ist Tab 3
 
 			if ($thumbnailTest) {
 
@@ -630,7 +646,8 @@ class DamfalfileController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContr
 				}
 			}
 		}
-
+		$logger->close();
+		
 		//Convert DAM Frontend plugin
 		$this->view->assign('damFePluginProgressArray', $this->damFrontendPluginProgress());
 	}

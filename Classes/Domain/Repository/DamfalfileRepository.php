@@ -1062,14 +1062,15 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	public function getArrayDataFromTable($fields, $tablename, $where, $groupBy = '', $orderBy = '', $limit = NULL) {
 		$limit = $limit === NULL ? ConfigUtility::getDefaultLimit() : $limit;
 
-		$entries = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+		$entries =  $this->watchOutDB($GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			$fields,
 			$tablename,
 			$where,
 			$groupBy,
 			$orderBy,
 			$limit
-		);
+		));
+
 
 		$arr = array();
 		$counter = 1;
@@ -1127,4 +1128,20 @@ class DamfalfileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		return $getProgressArray;
 	}
 
+	public function watchOutDB($res) {
+		$database = $GLOBALS['TYPO3_DB'];
+		
+		if(!$this->testResource($res) && $database->sql_error()) {
+			$msg = $database->sql_error();
+			$msg .= ' in ';
+			$msg .= $database->debug_lastBuiltQuery;
+			throw new \Exception($msg);
+		}
+		
+		return $res;
+	}
+	private function testResource($res) {
+		return is_resource($res) || $res instanceof mysqli_result;
+	}
+	
 }
