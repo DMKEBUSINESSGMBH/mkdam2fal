@@ -27,28 +27,44 @@ namespace DMK\Mkdam2fal\ServiceHelper;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+/**
+ * Class FileLogger
+ *
+ * @package DMK\Mkdam2fal\ServiceHelper
+ * @author  Mario Seidel <mario.seidel@dmk-ebusiness.de>
+ */
 class FileLogger
 {
     private $filename;
     private $handle;
     private $writeable = false;
 
+    /**
+     * FileLogger constructor.
+     *
+     * @param string $filename
+     * @param bool   $unique
+     */
     public function __construct($filename, $unique = false)
     {
         $folderpath = PATH_site . 'typo3temp/mkdam2fal/logs/';
+
+        if (!is_dir($folderpath)) {
+            mkdir($folderpath, 0770, true);
+        }
+
         $this->filename = $folderpath . 'log_' . $filename . (
             $unique ? '_' . date('Y-m-d-H_i_s') : '') . '.txt';
 
     }
 
     /**
-     * function to write a log and save it in a file
+     * Function to write a log and save it in a file
      *
-     * @param string $chosenExtension
-     * @param array  $errorMessageArray
-     * @param string $logname
+     * @param string $message
      *
      * @return string
+     * @throws \Exception
      */
     public function writeLog($message)
     {
@@ -58,9 +74,14 @@ class FileLogger
 
         fwrite($this->handle, $message);
         fwrite($this->handle, "\r\n");
+
         return $this;
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     public function open()
     {
         if ($this->writeable) {
@@ -70,14 +91,19 @@ class FileLogger
             throw new \Exception(sprintf('Could not open log file %s', $this->filename));
         }
         $this->writeable = true;
+
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function close()
     {
         if ($this->handle) {
             fclose($this->handle);
         }
+
         return $this->filename;
     }
 
