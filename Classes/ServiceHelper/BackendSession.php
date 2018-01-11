@@ -1,4 +1,5 @@
 <?php
+
 namespace DMK\Mkdam2fal\ServiceHelper;
 
 /***************************************************************
@@ -33,16 +34,21 @@ namespace DMK\Mkdam2fal\ServiceHelper;
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  *
  */
-class BackendSession {
+class BackendSession
+{
 
-	/**
+    /**
      * function to set and get backendsession parameters
-	 *
-	 * @param string $parameter
-	 * @param string $nameOfArrayFieldInSession
+     *
+     * @param string $parameter
+     * @param string $nameOfArrayFieldInSession
+     *
      * @return string
      */
-    public function setOrGetSessionParameter($parameter, $nameOfArrayFieldInSession = 'defaultSession') {
+    public function setOrGetSessionParameter(
+        $parameter,
+        $nameOfArrayFieldInSession = 'defaultSession'
+    ) {
         if ($parameter) {
             if ($GLOBALS['BE_USER']->getSessionData('savedInformationInSession')) {
                 $sessionData = $GLOBALS['BE_USER']->getSessionData('savedInformationInSession');
@@ -51,10 +57,10 @@ class BackendSession {
                 $sessionData = array();
                 $sessionData[$nameOfArrayFieldInSession] = $parameter;
             }
-			$GLOBALS['BE_USER']->setAndSaveSessionData('savedInformationInSession', $sessionData);
+            $GLOBALS['BE_USER']->setAndSaveSessionData('savedInformationInSession', $sessionData);
         } else {
-			$sessionArray = $GLOBALS['BE_USER']->getSessionData('savedInformationInSession');
-			$parameter = $sessionArray[$nameOfArrayFieldInSession];
+            $sessionArray = $GLOBALS['BE_USER']->getSessionData('savedInformationInSession');
+            $parameter = $sessionArray[$nameOfArrayFieldInSession];
         }
         return $parameter;
     }

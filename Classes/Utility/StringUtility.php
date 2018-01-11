@@ -34,10 +34,13 @@ class StringUtility
      * @param $string
      * @param $existingUid
      * @param $newUid
+     *
      * @return mixed
      */
-    public static function addUidStr($string, $existingUid, $newUid) {
-        $result = preg_replace('/([,>])(' . $existingUid . ')([,<])/i', "\${1}$newUid,\${2}\${3}", $string, 1);
+    public static function addUidStr($string, $existingUid, $newUid)
+    {
+        $result = preg_replace('/([,>])(' . $existingUid . ')([,<])/i', "\${1}$newUid,\${2}\${3}",
+            $string, 1);
 
         return $result;
     }

@@ -1,4 +1,5 @@
 <?php
+
 namespace DMK\Mkdam2fal\Utility;
 
 /***************************************************************
@@ -29,26 +30,31 @@ namespace DMK\Mkdam2fal\Utility;
 /**
  * DamfalfileController
  */
-class ConfigUtility {
+class ConfigUtility
+{
 
-	/**
-	 *
-	 * @param string $cfgKey
-	 * @return mixed
-	 */
-	private static function getExtensionCfgValue($cfgKey) {
-		$extConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['mkdam2fal']);
-		return (is_array($extConfig) && array_key_exists($cfgKey, $extConfig)) ? $extConfig[$cfgKey] : NULL;
-	}
+    /**
+     * limit for migrations for run
+     *
+     * @return number
+     */
+    public static function getDefaultLimit()
+    {
+        $limit = (int)self::getExtensionCfgValue('defaultLimit');
+        return $limit ? $limit : 5000;
+    }
 
-	/**
-	 * limit for migrations for run
-	 *
-	 * @return number
-	 */
-	public static function getDefaultLimit() {
-		$limit = (int) self::getExtensionCfgValue('defaultLimit');
-		return $limit ? $limit : 5000;
-	}
+    /**
+     *
+     * @param string $cfgKey
+     *
+     * @return mixed
+     */
+    private static function getExtensionCfgValue($cfgKey)
+    {
+        $extConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['mkdam2fal']);
+        return (is_array($extConfig) && array_key_exists($cfgKey,
+                $extConfig)) ? $extConfig[$cfgKey] : null;
+    }
 
 }

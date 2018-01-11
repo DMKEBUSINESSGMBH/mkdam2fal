@@ -1,4 +1,5 @@
 <?php
+
 namespace DMK\Mkdam2fal\ServiceHelper;
 
 /***************************************************************
@@ -26,61 +27,66 @@ namespace DMK\Mkdam2fal\ServiceHelper;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class FileLogger {
-	private $filename;
-	private $handle;
-	private $writeable = false;
-	
-	public function __construct($filename, $unique = false)
-	{
-		$folderpath = PATH_site . 'typo3temp/mkdam2fal/logs/';
-		$this->filename = $folderpath . 'log_' . $filename . (
-				$unique ? '_' . date('Y-m-d-H_i_s') : '' ) . '.txt';
+class FileLogger
+{
+    private $filename;
+    private $handle;
+    private $writeable = false;
 
-	}
+    public function __construct($filename, $unique = false)
+    {
+        $folderpath = PATH_site . 'typo3temp/mkdam2fal/logs/';
+        $this->filename = $folderpath . 'log_' . $filename . (
+            $unique ? '_' . date('Y-m-d-H_i_s') : '') . '.txt';
 
-	public function open()
-	{
-		if($this->writeable) {
-			return $this;
-		}
-		if (!$this->handle = fopen($this->filename, 'w')) {
-			throw new \Exception(sprintf('Could not open log file %s', $this->filename));
-		}
-		$this->writeable = true;
-		return $this;
-	}
-	/**
+    }
+
+    /**
      * function to write a log and save it in a file
-	 *
-	 * @param string $chosenExtension
-	 * @param array $errorMessageArray
-	 * @param string $logname
+     *
+     * @param string $chosenExtension
+     * @param array  $errorMessageArray
+     * @param string $logname
+     *
      * @return string
      */
-	public function writeLog($message) {
-		if (!$this->writeable) {
-			$this->open();
-		}
+    public function writeLog($message)
+    {
+        if (!$this->writeable) {
+            $this->open();
+        }
 
-		fwrite($this->handle, $message);
-		fwrite($this->handle, "\r\n");
-		return $this;
-	}
-	public function close()
-	{
-		if ($this->handle) {
-			fclose($this->handle);
-		}
-		return $this->filename;
-	}
+        fwrite($this->handle, $message);
+        fwrite($this->handle, "\r\n");
+        return $this;
+    }
 
-	/**
-	 * 
-	 * @return string
-	 */
-	public function dump()
-	{
-		return file_get_contents($this->filename);
-	}
+    public function open()
+    {
+        if ($this->writeable) {
+            return $this;
+        }
+        if (!$this->handle = fopen($this->filename, 'w')) {
+            throw new \Exception(sprintf('Could not open log file %s', $this->filename));
+        }
+        $this->writeable = true;
+        return $this;
+    }
+
+    public function close()
+    {
+        if ($this->handle) {
+            fclose($this->handle);
+        }
+        return $this->filename;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function dump()
+    {
+        return file_get_contents($this->filename);
+    }
 }

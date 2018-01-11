@@ -1,4 +1,5 @@
 <?php
+
 namespace DMK\Mkdam2fal\ServiceHelper;
 
 /***************************************************************
@@ -33,108 +34,115 @@ namespace DMK\Mkdam2fal\ServiceHelper;
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  *
  */
-class FileFolderRead {
+class FileFolderRead
+{
 
-	/**
+    /**
      * function to write a log and save it in a file
-	 *
-	 * @param string $chosenExtension
-	 * @param array $errorMessageArray
-	 * @param string $logname
+     *
+     * @param string $chosenExtension
+     * @param array  $errorMessageArray
+     * @param string $logname
+     *
      * @return string
      */
-	public function writeLog($chosenExtension, $errorMessageArray, $logname = '') {
+    public function writeLog($chosenExtension, $errorMessageArray, $logname = '')
+    {
 
-		$folderpath = PATH_site . 'typo3temp/mkdam2fal/logs/';
+        $folderpath = PATH_site . 'typo3temp/mkdam2fal/logs/';
 
-		if ($logname) {
-			$filename = $folderpath . $logname . '.txt';
-		} else {
-			$filename = $folderpath . 'log_' . $chosenExtension . '_' . date('Y-m-d-H_i_s') . '.txt';
-		}
+        if ($logname) {
+            $filename = $folderpath . $logname . '.txt';
+        } else {
+            $filename = $folderpath . 'log_' . $chosenExtension . '_' . date('Y-m-d-H_i_s') . '.txt';
+        }
 
-		if (!$handle = fopen($filename, 'a')) {
-			// echo 'no handle';
-			exit;
-		}
+        if (!$handle = fopen($filename, 'a')) {
+            // echo 'no handle';
+            exit;
+        }
 
-		foreach ($errorMessageArray as $content) {
-			$actualDate = date('H:i:s Y-m-d') . ';';
-			fwrite($handle, $actualDate);
-			foreach ($content as $contentInner) {
-				$contentInner = $contentInner . ';';
-				if (!fwrite($handle, $contentInner)) {
-					exit;
-				}
-			}
-			fwrite($handle, "\r\n");
-		}
-		fwrite($handle, "Finish\r\n");
+        foreach ($errorMessageArray as $content) {
+            $actualDate = date('H:i:s Y-m-d') . ';';
+            fwrite($handle, $actualDate);
+            foreach ($content as $contentInner) {
+                $contentInner = $contentInner . ';';
+                if (!fwrite($handle, $contentInner)) {
+                    exit;
+                }
+            }
+            fwrite($handle, "\r\n");
+        }
+        fwrite($handle, "Finish\r\n");
 
-		fclose($handle);
+        fclose($handle);
 
-		return $filename;
-	}
+        return $filename;
+    }
 
-	/**
+    /**
      * function to write a log and save it in a file as csv
-	 *
-	 * @param string $chosenExtension
-	 * @param array $errorMessageArray
-	 * @param string $logname
+     *
+     * @param string $chosenExtension
+     * @param array  $errorMessageArray
+     * @param string $logname
+     *
      * @return string
      */
-	public function writeCsvLog($data, $logname = '') {
+    public function writeCsvLog($data, $logname = '')
+    {
 
-		$folderpath = PATH_site . 'typo3temp/mkdam2fal/logs/';
+        $folderpath = PATH_site . 'typo3temp/mkdam2fal/logs/';
 
-		if ($logname) {
-			$filename = $folderpath . $logname . '.csv';
-		} else {
-			$filename = $folderpath . 'log_' . date('Y-m-d-H_i_s') . '.csv';
-		}
+        if ($logname) {
+            $filename = $folderpath . $logname . '.csv';
+        } else {
+            $filename = $folderpath . 'log_' . date('Y-m-d-H_i_s') . '.csv';
+        }
 
-		if (!$handle = fopen($filename, 'a')) {
-			// echo 'no handle';
-			exit;
-		}
+        if (!$handle = fopen($filename, 'a')) {
+            // echo 'no handle';
+            exit;
+        }
 
-		fputcsv($handle, array('old','new'));
+        fputcsv($handle, array('old', 'new'));
 
-		foreach ($data as $line) {
-			fputcsv($handle, $line);
-		}
+        foreach ($data as $line) {
+            fputcsv($handle, $line);
+        }
 
-		fclose($handle);
+        fclose($handle);
 
-		return $filename;
-	}
+        return $filename;
+    }
 
-	/**
-	 * function to read a folder
-	 *
-	 * @param string $path
-	 * @param string $filter filter if filename contains filter string
-	 * @return array
-	 */
-	public function getFolderFilenames($path, $filter = '') {
-		$arr = array();
-		if ($handle = opendir($path)) {
-			$counter=0;
-			while (false !== ($file = readdir($handle))) {
-				if ($file != '.' && $file != '..' && $file[0] != '.') {
-					if (!empty($filter)) {
-						if (strpos($file, $filter) === false) {
-							continue;
-						}
-					}
-					$arr[$counter] = $file;
-					$counter++;
-				}
-			}
-			closedir($handle);
-		}
-		return $arr;
-	}
+    /**
+     * function to read a folder
+     *
+     * @param string $path
+     * @param string $filter filter if filename contains filter string
+     *
+     * @return array
+     */
+    public function getFolderFilenames($path, $filter = '')
+    {
+        $arr = array();
+        if ($handle = opendir($path)) {
+            $counter = 0;
+            while (false !== ($file = readdir($handle))) {
+                if ($file != '.' && $file != '..' && $file[0] != '.') {
+                    if (!empty($filter)) {
+                        if (strpos($file, $filter) === false) {
+                            continue;
+                        }
+                    }
+                    $arr[$counter] = $file;
+                    $counter++;
+                }
+            }
+            closedir($handle);
+        }
+        return $arr;
+    }
 
 }

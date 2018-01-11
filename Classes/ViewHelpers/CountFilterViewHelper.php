@@ -1,4 +1,5 @@
 <?php
+
 namespace DMK\Mkdam2fal\ViewHelpers;
 
 
@@ -16,39 +17,42 @@ namespace DMK\Mkdam2fal\ViewHelpers;
  *
  * @api
  */
-class CountFilterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class CountFilterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
+{
 
-	/**
-	 * Counts the items of a given property.
-	 *
-	 * @param string $filter
-	 * @param array $subject The array or \Countable to be counted
-	 * @return int The number of elements
-	 * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception
-	 * @api
-	 */
-	public function render($filter, $subject = NULL) {
-		$result = 0;
+    /**
+     * @var boolean
+     */
+    protected $escapingInterceptorEnabled = false;
 
-		if ($subject === NULL) {
-			$subject = $this->renderChildren();
-		}
-		if (is_object($subject) && !$subject instanceof \Countable) {
-			throw new \TYPO3\CMS\Fluid\Core\ViewHelper\Exception('CountFilterViewHelper only supports arrays and objects implementing \Countable interface. Given: "' . get_class($subject) . '"');
-		}
+    /**
+     * Counts the items of a given property.
+     *
+     * @param string $filter
+     * @param array  $subject The array or \Countable to be counted
+     *
+     * @return int The number of elements
+     * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception
+     * @api
+     */
+    public function render($filter, $subject = null)
+    {
+        $result = 0;
 
-		$func = create_function('$subject', 'return ' . $filter);
+        if ($subject === null) {
+            $subject = $this->renderChildren();
+        }
+        if (is_object($subject) && !$subject instanceof \Countable) {
+            throw new \TYPO3\CMS\Fluid\Core\ViewHelper\Exception('CountFilterViewHelper only supports arrays and objects implementing \Countable interface. Given: "' . get_class($subject) . '"');
+        }
 
-		foreach ($subject as $value) {
-			if ($func($value)) {
-				$result++;
-			}
-		}
-		return $result;
-	}
+        $func = create_function('$subject', 'return ' . $filter);
 
-	/**
-	 * @var boolean
-	 */
-	protected $escapingInterceptorEnabled = FALSE;
+        foreach ($subject as $value) {
+            if ($func($value)) {
+                $result++;
+            }
+        }
+        return $result;
+    }
 }
